@@ -40,21 +40,50 @@
         .modal-content { background-color: #1f2937; padding: 2rem; border-radius: 0.75rem; max-width: 500px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
         .loader { width: 1rem; height: 1rem; border: 2px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: inline-block; box-sizing: border-box; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* DFCF Table Styles */
+        .dfcf-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.875rem; }
+        .dfcf-table th, .dfcf-table td { padding: 0.75rem; text-align: right; border-bottom: 1px solid #374151; }
+        .dfcf-table th { background-color: #374151; font-weight: 600; color: #d1d5db; }
+        .dfcf-table td:first-child { text-align: left; font-weight: 500; color: #d1d5db; }
+        .dfcf-table tbody tr:last-child td { border-bottom: none; }
+        .dfcf-table tbody tr:hover { background-color: #2b3544; }
+
+        /* Results Card Styles */
+        .result-card { background-color: #111827; border: 1px solid #374151; padding: 1.5rem; border-radius: 0.75rem; text-align: center; }
+        .result-label { font-size: 0.875rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; }
+        .result-value { font-size: 2.25rem; font-weight: 700; color: #fff; margin-top: 0.25rem; margin-bottom: 0.25rem; }
+        .recommendation { padding: 0.5rem 1rem; border-radius: 9999px; font-weight: 600; display: inline-block; margin-top: 1rem; }
+        .buy { color: #4ade80; background-color: rgba(74, 222, 128, 0.1); }
+        .sell { color: #f87171; background-color: rgba(248, 113, 113, 0.1); }
+        .hold { color: #facc15; background-color: rgba(250, 204, 21, 0.1); }
+
+        /* Buffett Supplement Styles */
+        .metric-card { background-color: #111827; border: 1px solid #374151; border-radius: 0.5rem; padding: 1rem; }
+        .metric-title { font-weight: 600; color: #fff; }
+        .metric-value { font-size: 1.5rem; font-weight: 700; color: #3b82f6; }
+        .metric-rating { font-weight: 600; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; }
+        .rating-good { color: #4ade80; background-color: rgba(74, 222, 128, 0.1); }
+        .rating-fair { color: #facc15; background-color: rgba(250, 204, 21, 0.1); }
+        .rating-poor { color: #f87171; background-color: rgba(248, 113, 113, 0.1); }
+        .metric-explanation { font-size: 0.875rem; color: #9ca3af; margin-top: 0.5rem; }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200 min-h-screen p-4">
+<body class="bg-gray-900 text-gray-200 min-h-screen p-4 sm:p-6">
 
     <main class="w-full max-w-7xl mx-auto space-y-6">
         <header class="text-center">
-            <h1 class="text-4xl font-bold text-white">Moneycessity Stock Intrinsic Value Calculator</h1>
-            <p class="text-lg text-gray-400 mt-2">A comprehensive valuation tool based on your spreadsheet model.</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-white">Moneycessity Stock Intrinsic Value Calculator</h1>
+            <p class="text-md sm:text-lg text-gray-400 mt-2">A comprehensive valuation tool based on your spreadsheet model.</p>
         </header>
 
         <!-- Tabs -->
-        <div class="flex flex-wrap justify-center items-center gap-4 bg-gray-800 p-2 rounded-lg">
+        <div class="flex flex-wrap justify-center items-center gap-2 sm:gap-4 bg-gray-800 p-2 rounded-lg">
             <button id="tab-btn-readme" class="tab-btn active">README</button>
             <button id="tab-btn-data" class="tab-btn">Data Entry</button>
-            <button id="tab-btn-dashboard" class="tab-btn">Dashboard & Assumptions</button>
+            <button id="tab-btn-dashboard" class="tab-btn">Dashboard</button>
+            <button id="tab-btn-dfcf" class="tab-btn">DFCF</button>
+            <button id="tab-btn-buffett" class="tab-btn">Buffett Supplement</button>
         </div>
 
         <!-- Tab Content -->
@@ -63,15 +92,15 @@
             <div id="tab-content-readme" class="tab-content active prose">
                  <h2>Welcome to the Stock Intrinsic Value Calculator</h2>
                 <p>
-                    This tool provides an estimate of a company's intrinsic value based on a 10-Year Discounted Free Cash Flow (DFCF) model.
+                    This tool provides an estimate of a company's intrinsic value based on a 10-Year Discounted Free Cash Flow (DFCF) model, supplemented with key quality metrics inspired by Warren Buffett's philosophy.
                 </p>
                  <h3>How to Use This Calculator</h3>
                 <ol class="list-decimal pl-6 space-y-2">
                     <li><strong>IMPORTANT: Add API Key:</strong> Before first use, get a free API key from <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener noreferrer">Alpha Vantage</a>. Edit this HTML file, find the <code>&lt;script&gt;</code> section at the very bottom, and replace <code>'YOUR_API_KEY_HERE'</code> in the configuration section at the top of the script. This is a one-time setup.</li>
                     <li><strong>Go to the "Data Entry" Tab:</strong> Start here.</li>
-                    <li><strong>Fetch Company Data:</strong> Enter a stock ticker (e.g., AAPL) and click the "Fetch Data & Go to Dashboard" button. This will automatically populate the Dashboard with live data.</li>
-                    <li><strong>Adjust Assumptions on Dashboard:</strong> On the Dashboard, review the fetched data and adjust your assumptions for the company's growth, margins, and discount rate.</li>
-                    <li><strong>Calculate:</strong> Once your assumptions are set, click the "Calculate Intrinsic Value" button on the Dashboard to see the results.</li>
+                    <li><strong>Fetch Company Data:</strong> Enter a stock ticker (e.g., AAPL) and click the "Fetch Data & Go to Dashboard" button.</li>
+                    <li><strong>Adjust Assumptions on Dashboard:</strong> Review the fetched data and adjust your assumptions for the company's future growth, margins, and discount rate.</li>
+                    <li><strong>Calculate:</strong> Click "Calculate Intrinsic Value". This shows the final valuation on the Dashboard, the detailed breakdown in the DFCF tab, and the quality metrics in the Buffett Supplement tab.</li>
                 </ol>
             </div>
 
@@ -82,7 +111,7 @@
                     <p class="text-gray-400 mb-6">Enter a stock ticker below to fetch the latest financial data and begin your valuation on the dashboard.</p>
                     <div class="input-group">
                         <label for="ticker" class="font-medium sr-only">Stock Ticker</label>
-                        <div class="flex gap-2">
+                        <div class="flex flex-col sm:flex-row gap-2">
                             <input type="text" id="ticker" class="input-field text-center" placeholder="Enter Ticker (e.g., AAPL)">
                             <button type="button" id="fetch-data-btn" class="btn btn-primary w-full">
                                 <span id="fetch-btn-text">Fetch Data & Go to Dashboard</span>
@@ -106,20 +135,26 @@
                             <div class="input-group"><label class="font-medium text-sm text-gray-400">Cash (M)</label><input type="text" id="cash" class="input-field read-only" readonly></div>
                             <div class="input-group"><label class="font-medium text-sm text-gray-400">Debt (M)</label><input type="text" id="debt" class="input-field read-only" readonly></div>
                         </div>
+                        <!-- Hidden fields for Buffett calculations -->
+                        <input type="hidden" id="netIncome">
+                        <input type="hidden" id="shareholderEquity">
+                        <input type="hidden" id="ebit">
+                        <input type="hidden" id="capitalExpenditures">
+                        <input type="hidden" id="operatingCashFlow">
                     </div>
 
                     <!-- Section 2: DFCF Model Assumptions -->
                     <div>
                         <h2 class="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Your Assumptions (% of Revenue, unless specified)</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div class="input-group"><label for="revGrowth1_5" class="font-medium">Revenue Growth Yrs 1-5 (%)</label><input type="number" id="revGrowth1_5" class="input-field" placeholder="12"></div>
-                            <div class="input-group"><label for="revGrowth6_10" class="font-medium">Revenue Growth Yrs 6-10 (%)</label><input type="number" id="revGrowth6_10" class="input-field" placeholder="8"></div>
-                            <div class="input-group"><label for="operatingMargin" class="font-medium">Operating Margin (%)</label><input type="number" id="operatingMargin" class="input-field" placeholder="25"></div>
-                            <div class="input-group"><label for="taxRate" class="font-medium">Tax Rate (%)</label><input type="number" id="taxRate" class="input-field wacc-input" placeholder="21"></div>
-                            <div class="input-group"><label for="capex" class="font-medium">CapEx as % of Revenue</label><input type="number" id="capex" class="input-field" placeholder="5"></div>
-                            <div class="input-group"><label for="d_a" class="font-medium">D&A as % of Revenue</label><input type="number" id="d_a" class="input-field" placeholder="4"></div>
-                            <div class="input-group"><label for="nwc" class="font-medium">Change in NWC as % of Revenue</label><input type="number" id="nwc" class="input-field" placeholder="3"></div>
-                            <div class="input-group"><label for="terminalRate" class="font-medium">Perpetual Growth Rate (%)</label><input type="number" id="terminalRate" class="input-field" placeholder="3"></div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            <div class="input-group"><label for="revGrowth1_5" class="font-medium">Revenue Growth Y1-5 (%)</label><input type="number" id="revGrowth1_5" value="12" class="input-field"></div>
+                            <div class="input-group"><label for="revGrowth6_10" class="font-medium">Revenue Growth Y6-10 (%)</label><input type="number" id="revGrowth6_10" value="8" class="input-field"></div>
+                            <div class="input-group"><label for="operatingMargin" class="font-medium">Operating Margin (%)</label><input type="number" id="operatingMargin" value="25" class="input-field"></div>
+                            <div class="input-group"><label for="taxRate" class="font-medium">Tax Rate (%)</label><input type="number" id="taxRate" value="21" class="input-field wacc-input"></div>
+                            <div class="input-group"><label for="capex" class="font-medium">CapEx % of Revenue</label><input type="number" id="capex" value="5" class="input-field"></div>
+                            <div class="input-group"><label for="d_a" class="font-medium">D&A % of Revenue</label><input type="number" id="d_a" value="4" class="input-field"></div>
+                            <div class="input-group"><label for="nwc" class="font-medium">Change in NWC % of Revenue</label><input type="number" id="nwc" value="3" class="input-field"></div>
+                            <div class="input-group"><label for="terminalRate" class="font-medium">Perpetual Growth Rate (%)</label><input type="number" id="terminalRate" value="3" class="input-field"></div>
                         </div>
                     </div>
 
@@ -134,7 +169,7 @@
                             </button>
                         </div>
                          <p class="info-note">Risk-Free Rate and Beta are fetched automatically but can be overridden. Other values use standard assumptions.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
                              <div class="input-group"><label for="riskFreeRate" class="font-medium">Risk-Free Rate (%)</label><input type="number" id="riskFreeRate" class="input-field wacc-input" placeholder="0.00" step="0.01"></div>
                              <div class="input-group"><label for="beta" class="font-medium">Beta</label><input type="number" id="beta" class="input-field wacc-input" placeholder="0.00" step="0.01"></div>
                              <div class="input-group"><label for="equityRiskPremium" class="font-medium">Equity Risk Premium (%)</label><input type="number" id="equityRiskPremium" class="input-field wacc-input" value="5.5" step="0.01"></div>
@@ -144,8 +179,8 @@
                             Calculated Discount Rate (WACC): <span id="calculated-wacc">--.--</span>%
                         </div>
                     </div>
-                     <!-- Section 4: Placeholder for Results and Action Button -->
-                    <div id="results-section" class="space-y-8">
+                     <!-- Section 4: Results -->
+                    <div id="results-section" class="space-y-4 pt-4 border-t border-gray-700">
                         <!-- Calculation results will be injected here by the script -->
                     </div>
 
@@ -154,6 +189,31 @@
                     </div>
                  </form>
             </div>
+
+             <!-- DFCF Content -->
+            <div id="tab-content-dfcf" class="tab-content">
+                <h2 class="text-xl font-semibold text-white mb-4">10-Year DFCF Projections (<span id="dfcf-ticker-display"></span>)</h2>
+                <div class="overflow-x-auto">
+                    <table class="dfcf-table">
+                        <thead id="dfcf-table-head">
+                            <!-- Header will be generated by script -->
+                        </thead>
+                        <tbody id="dfcf-table-body">
+                           <!-- Rows will be generated by script -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Buffett Supplement Content -->
+            <div id="tab-content-buffett" class="tab-content">
+                <h2 class="text-xl font-semibold text-white mb-4">Buffett Supplement: Quality Metrics (<span id="buffett-ticker-display"></span>)</h2>
+                <div id="buffett-metrics-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Metrics will be generated by script -->
+                    <p class="text-gray-400">Run a calculation on the Dashboard tab to see the quality metrics here.</p>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -179,7 +239,9 @@
             const tabs = [
                 { id: 'readme', btn: document.getElementById('tab-btn-readme'), content: document.getElementById('tab-content-readme') },
                 { id: 'data', btn: document.getElementById('tab-btn-data'), content: document.getElementById('tab-content-data') },
-                { id: 'dashboard', btn: document.getElementById('tab-btn-dashboard'), content: document.getElementById('tab-content-dashboard') }
+                { id: 'dashboard', btn: document.getElementById('tab-btn-dashboard'), content: document.getElementById('tab-content-dashboard') },
+                { id: 'dfcf', btn: document.getElementById('tab-btn-dfcf'), content: document.getElementById('tab-content-dfcf') },
+                { id: 'buffett', btn: document.getElementById('tab-btn-buffett'), content: document.getElementById('tab-content-buffett') }
             ];
             
             const calculateBtn = document.getElementById('calculate-btn');
@@ -194,6 +256,10 @@
             const closeModalBtn = document.getElementById('close-modal-btn');
             
             const companyNameDisplay = document.getElementById('company-name-display');
+            const dfcfTickerDisplay = document.getElementById('dfcf-ticker-display');
+            const buffettTickerDisplay = document.getElementById('buffett-ticker-display');
+            const resultsSection = document.getElementById('results-section');
+            const buffettMetricsContainer = document.getElementById('buffett-metrics-container');
 
             function switchTab(targetId) {
                 let targetIndex = tabs.findIndex(tab => tab.id === targetId);
@@ -234,13 +300,11 @@
             function calculateWACC() {
                 const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
                 
-                // Read-only fields are on dashboard, need to reference them from there
                 const currentPrice = parseFloat(document.getElementById('currentPrice').value) || 0;
                 const sharesOutstanding = parseFloat(document.getElementById('sharesOutstanding').value) || 0;
                 const cash = parseFloat(document.getElementById('cash').value) || 0;
                 const debt = parseFloat(document.getElementById('debt').value) || 0;
 
-                // Assumption fields
                 const taxRate = getVal('taxRate') / 100;
                 const riskFreeRate = getVal('riskFreeRate') / 100;
                 const beta = getVal('beta');
@@ -252,9 +316,9 @@
                 
                 const calculatedWaccEl = document.getElementById('calculated-wacc');
 
-                if (enterpriseValue <= 0) {
+                if (enterpriseValue <= 0 || marketCap <= 0) {
                     calculatedWaccEl.textContent = '--.--';
-                    return;
+                    return 0;
                 }
 
                 const weightOfEquity = marketCap / enterpriseValue;
@@ -267,8 +331,10 @@
                 
                 if (isNaN(wacc) || !isFinite(wacc)) {
                     calculatedWaccEl.textContent = '--.--';
+                    return 0;
                 } else {
                     calculatedWaccEl.textContent = (wacc * 100).toFixed(2);
+                    return wacc;
                 }
             }
             
@@ -297,42 +363,63 @@
                     const overviewUrl = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${ticker}&apikey=${apiKey}`;
                     const quoteUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${apiKey}`;
                     const treasuryUrl = `https://www.alphavantage.co/query?function=TREASURY_YIELD&interval=monthly&maturity=10year&apikey=${apiKey}`;
+                    const cashflowUrl = `https://www.alphavantage.co/query?function=CASH_FLOW&symbol=${ticker}&apikey=${apiKey}`;
 
-                    const [overviewResponse, quoteResponse, treasuryResponse] = await Promise.all([
+                    const [overviewResponse, quoteResponse, treasuryResponse, cashflowResponse] = await Promise.all([
                         fetch(overviewUrl),
                         fetch(quoteUrl),
-                        fetch(treasuryUrl)
+                        fetch(treasuryUrl),
+                        fetch(cashflowUrl)
                     ]);
 
                     const overviewData = await overviewResponse.json();
                     const quoteData = await quoteResponse.json();
                     const treasuryData = await treasuryResponse.json();
+                    const cashflowData = await cashflowResponse.json();
 
-                    if (overviewData['Note'] || quoteData['Note'] || treasuryData['Note']) {
+                    if (overviewData['Note'] || quoteData['Note'] || treasuryData['Note'] || cashflowData['Note']) {
                          throw new Error('API limit reached. Please try again later.');
                     }
                     if (!overviewData.Symbol) {
                         throw new Error(`Could not find data for ticker "${ticker}". Please check the symbol.`);
                     }
 
-                    // Populate read-only dashboard fields (converting to millions)
-                    const toMillions = (val) => val ? (parseFloat(val) / 1000000).toFixed(0) : 0;
+                    const toMillions = (val) => val ? (parseFloat(val) / 1000000) : 0;
                     
                     companyNameDisplay.textContent = `${overviewData.Name} (${overviewData.Symbol})`;
+                    dfcfTickerDisplay.textContent = overviewData.Symbol;
+                    buffettTickerDisplay.textContent = overviewData.Symbol;
+
                     document.getElementById('currentPrice').value = parseFloat(quoteData['Global Quote']['05. price']).toFixed(2);
-                    document.getElementById('sharesOutstanding').value = toMillions(overviewData.SharesOutstanding);
-                    document.getElementById('revenue').value = toMillions(overviewData.RevenueTTM);
-                    document.getElementById('cash').value = toMillions(overviewData.CashAndShortTermInvestments);
-                    document.getElementById('debt').value = toMillions(overviewData.LongTermDebt + overviewData.ShortTermDebt);
+                    document.getElementById('sharesOutstanding').value = toMillions(overviewData.SharesOutstanding).toFixed(0);
+                    document.getElementById('revenue').value = toMillions(overviewData.RevenueTTM).toFixed(0);
+                    document.getElementById('cash').value = toMillions(overviewData.CashAndShortTermInvestments).toFixed(0);
+                    document.getElementById('debt').value = toMillions(overviewData.LongTermDebt + overviewData.ShortTermDebt).toFixed(0);
                     
-                    // Populate WACC assumption fields
+                    // Hidden fields for Buffett calculations
+                    document.getElementById('netIncome').value = toMillions(overviewData.NetIncomeTTM).toFixed(0);
+                    document.getElementById('shareholderEquity').value = toMillions(overviewData.BookValue * overviewData.SharesOutstanding).toFixed(0);
+                    document.getElementById('ebit').value = toMillions(overviewData.EBITDA - overviewData.DepreciationAndAmortization).toFixed(0);
+
+                    if (cashflowData.annualReports && cashflowData.annualReports.length > 0) {
+                        const latestCashFlow = cashflowData.annualReports[0];
+                        document.getElementById('operatingCashFlow').value = toMillions(latestCashFlow.operatingCashflow).toFixed(0);
+                        document.getElementById('capitalExpenditures').value = toMillions(latestCashFlow.capitalExpenditures).toFixed(0);
+                    } else {
+                         document.getElementById('operatingCashFlow').value = 0;
+                         document.getElementById('capitalExpenditures').value = 0;
+                    }
+
                     document.getElementById('beta').value = parseFloat(overviewData.Beta).toFixed(2);
                     if (treasuryData.data && treasuryData.data.length > 0) {
                         document.getElementById('riskFreeRate').value = parseFloat(treasuryData.data[0].value).toFixed(2);
                     }
                     
-                    switchTab('dashboard'); // Switch to dashboard after successful fetch
-                    calculateWACC(); // Calculate WACC with new data
+                    switchTab('dashboard');
+                    calculateWACC();
+                    resultsSection.innerHTML = ''; // Clear previous results
+                    buffettMetricsContainer.innerHTML = '<p class="text-gray-400">Run a calculation on the Dashboard tab to see the quality metrics here.</p>';
+
 
                 } catch (error) {
                     showModal('Error Fetching Data', error.message);
@@ -343,16 +430,181 @@
                 }
             }
 
+            function runCalculations() {
+                const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
+                
+                const inputs = {
+                    currentPrice: getVal('currentPrice'), shares: getVal('sharesOutstanding'),
+                    revenue: getVal('revenue'), cash: getVal('cash'), debt: getVal('debt'),
+                    netIncome: getVal('netIncome'), shareholderEquity: getVal('shareholderEquity'),
+                    ebit: getVal('ebit'), operatingCashFlow: getVal('operatingCashFlow'),
+                    capitalExpenditures: getVal('capitalExpenditures'), taxRate: getVal('taxRate') / 100,
+                    revGrowth1_5: getVal('revGrowth1_5') / 100, revGrowth6_10: getVal('revGrowth6_10') / 100,
+                    opMargin: getVal('operatingMargin') / 100, capexPct: getVal('capex') / 100,
+                    daPct: getVal('d_a') / 100, nwcPct: getVal('nwc') / 100,
+                    terminalRate: getVal('terminalRate') / 100, wacc: calculateWACC()
+                };
+
+                if(inputs.wacc <= 0 || inputs.shares <= 0) {
+                    showModal('Calculation Error', 'WACC and Shares must be positive numbers. Please fetch data and check assumptions.');
+                    return;
+                }
+                if (inputs.wacc <= inputs.terminalRate) {
+                    showModal('Calculation Error', 'WACC must be greater than the Perpetual Growth Rate for the model to work.');
+                    return;
+                }
+                
+                // DFCF Calculation
+                let yearlyData = [];
+                let currentRevenue = inputs.revenue;
+                let sumOfDiscountedFcff = 0;
+
+                for (let year = 1; year <= 10; year++) {
+                    const growthRate = year <= 5 ? inputs.revGrowth1_5 : inputs.revGrowth6_10;
+                    const projectedRevenue = currentRevenue * (1 + growthRate);
+                    const ebit = projectedRevenue * inputs.opMargin;
+                    const nopat = ebit * (1 - inputs.taxRate);
+                    const depreciation = projectedRevenue * inputs.daPct;
+                    const capex = projectedRevenue * inputs.capexPct;
+                    const changeInNwc = (projectedRevenue - currentRevenue) * inputs.nwcPct;
+                    const fcff = nopat + depreciation - capex - changeInNwc;
+                    const discountFactor = Math.pow(1 + inputs.wacc, year);
+                    const discountedFcff = fcff / discountFactor;
+                    sumOfDiscountedFcff += discountedFcff;
+                    yearlyData.push({ year, projectedRevenue, fcff, discountedFcff });
+                    currentRevenue = projectedRevenue;
+                }
+                
+                const terminalFcff = yearlyData[9].fcff * (1 + inputs.terminalRate);
+                const terminalValue = terminalFcff / (inputs.wacc - inputs.terminalRate);
+                const discountedTerminalValue = terminalValue / Math.pow(1 + inputs.wacc, 10);
+                const enterpriseValue = sumOfDiscountedFcff + discountedTerminalValue;
+                const equityValue = enterpriseValue - inputs.debt + inputs.cash;
+                const intrinsicValuePerShare = equityValue / inputs.shares;
+
+                populateDcfcTable(yearlyData, terminalValue, discountedTerminalValue);
+                populateDashboardResults(intrinsicValuePerShare, inputs.currentPrice);
+                
+                // Buffett Calculations
+                runBuffettSupplementCalculations(inputs);
+
+                switchTab('dashboard');
+            }
+
+            function runBuffettSupplementCalculations(data) {
+                const metrics = [];
+
+                // 1. Owner's Earnings
+                const ownersEarnings = data.operatingCashFlow - data.capitalExpenditures;
+                metrics.push({
+                    title: "Owner's Earnings (M)",
+                    value: formatCurrency(ownersEarnings).slice(0, -3),
+                    rating: ownersEarnings > 0 ? 'Good' : 'Poor',
+                    explanation: "Buffett's version of FCF (OCF - CapEx). Represents cash available to owners."
+                });
+                
+                // 2. ROIC
+                const nopat = data.ebit * (1 - data.taxRate);
+                const investedCapital = data.debt + data.shareholderEquity;
+                const roic = investedCapital > 0 ? (nopat / investedCapital) * 100 : 0;
+                let roicRating;
+                if (roic > 15) roicRating = 'Good'; else if (roic > 10) roicRating = 'Fair'; else roicRating = 'Poor';
+                metrics.push({
+                    title: "Return on Invested Capital (ROIC)", value: roic.toFixed(1) + '%', rating: roicRating,
+                    explanation: "Measures how efficiently a company uses its capital (equity and debt). Higher is better."
+                });
+
+                // 3. ROE
+                const roe = data.shareholderEquity > 0 ? (data.netIncome / data.shareholderEquity) * 100 : 0;
+                let roeRating;
+                if (roe > 20) roeRating = 'Good'; else if (roe > 15) roeRating = 'Fair'; else roeRating = 'Poor';
+                metrics.push({
+                    title: "Return on Equity (ROE)", value: roe.toFixed(1) + '%', rating: roeRating,
+                    explanation: "Measures profitability relative to shareholder's equity. Consistently high ROE is a good sign."
+                });
+
+                // 4. Debt to FCF Ratio
+                const debtToFcf = ownersEarnings > 0 ? data.debt / ownersEarnings : Infinity;
+                let debtRating;
+                if (debtToFcf < 3) debtRating = 'Good'; else if (debtToFcf < 5) debtRating = 'Fair'; else debtRating = 'Poor';
+                metrics.push({
+                    title: "Debt to FCF Ratio (Years to Repay)", value: isFinite(debtToFcf) ? debtToFcf.toFixed(1) : 'N/A', rating: debtRating,
+                    explanation: "Shows how many years of owner's earnings it would take to repay all debt. Lower is better."
+                });
+
+                renderBuffettMetrics(metrics);
+            }
+
+            function renderBuffettMetrics(metrics) {
+                buffettMetricsContainer.innerHTML = metrics.map(metric => {
+                    let ratingClass = 'rating-fair';
+                    if (metric.rating === 'Good') ratingClass = 'rating-good';
+                    if (metric.rating === 'Poor') ratingClass = 'rating-poor';
+                    return `
+                        <div class="metric-card">
+                            <div class="flex justify-between items-start">
+                                <p class="metric-title">${metric.title}</p>
+                                <span class="metric-rating ${ratingClass}">${metric.rating}</span>
+                            </div>
+                            <p class="metric-value">${metric.value}</p>
+                            <p class="metric-explanation">${metric.explanation}</p>
+                        </div>`;
+                }).join('');
+            }
+            
+            function formatCurrency(value) {
+                return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+            }
+
+            function populateDcfcTable(yearlyData, terminalValue, discountedTerminalValue) {
+                const head = document.getElementById('dfcf-table-head');
+                const body = document.getElementById('dfcf-table-body');
+                const fmt = (val) => val.toFixed(0);
+
+                head.innerHTML = `<tr><th>Metric (in millions)</th>${yearlyData.map(d => `<th>Year ${d.year}</th>`).join('')}</tr>`;
+                body.innerHTML = `
+                    <tr><td>Revenue</td>${yearlyData.map(d => `<td>${fmt(d.projectedRevenue)}</td>`).join('')}</tr>
+                    <tr><td>Free Cash Flow (FCF)</td>${yearlyData.map(d => `<td>${fmt(d.fcff)}</td>`).join('')}</tr>
+                    <tr><td>Discounted FCF</td>${yearlyData.map(d => `<td>${fmt(d.discountedFcff)}</td>`).join('')}</tr>
+                    <tr><td colspan="11" class="pt-4 font-bold text-left">Terminal Value Calculation</td></tr>
+                    <tr><td class="pl-6">Terminal Value</td><td colspan="10" class="text-center">${fmt(terminalValue)}</td></tr>
+                    <tr><td class="pl-6">PV of Terminal Value</td><td colspan="10" class="text-center">${fmt(discountedTerminalValue)}</td></tr>
+                `;
+            }
+
+            function populateDashboardResults(intrinsicValue, currentPrice) {
+                const marginOfSafety = ((intrinsicValue - currentPrice) / intrinsicValue);
+                let recommendation, recClass;
+
+                if (marginOfSafety > 0.5) { recommendation = 'Strong Buy'; recClass = 'buy'; } 
+                else if (marginOfSafety > 0.25) { recommendation = 'Buy'; recClass = 'buy'; } 
+                else if (marginOfSafety > -0.1) { recommendation = 'Hold'; recClass = 'hold'; }
+                else { recommendation = 'Sell'; recClass = 'sell'; }
+                
+                resultsSection.innerHTML = `
+                    <h2 class="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Valuation Results</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="result-card">
+                            <p class="result-label">Intrinsic Value / Share</p>
+                            <p class="result-value">${formatCurrency(intrinsicValue)}</p>
+                        </div>
+                        <div class="result-card">
+                            <p class="result-label">Margin of Safety</p>
+                            <p class="result-value">${(marginOfSafety * 100).toFixed(1)}%</p>
+                        </div>
+                        <div class="result-card">
+                            <p class="result-label">Recommendation</p>
+                            <p class="result-value recommendation ${recClass}">${recommendation}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
             tabs.forEach(tab => {
                 tab.btn.addEventListener('click', () => switchTab(tab.id));
             });
             
-            calculateBtn.addEventListener('click', () => {
-                // Placeholder for main calculation logic
-                console.log("Main calculation logic will be added here.");
-                // This is where we will display the results on the dashboard
-            });
-            
+            calculateBtn.addEventListener('click', runCalculations);
             waccInfoBtn.addEventListener('click', showWaccCalculationInfo);
             fetchDataBtn.addEventListener('click', fetchStockData);
             closeModalBtn.addEventListener('click', hideModal);
