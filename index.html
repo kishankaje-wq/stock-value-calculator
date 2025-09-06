@@ -69,7 +69,7 @@
                 <ol class="list-decimal pl-6 space-y-2">
                     <li><strong>IMPORTANT: Add Your API Key:</strong> Before first use, you must get a free API key from <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener noreferrer">Alpha Vantage</a>. Edit this HTML file, find the <code>&lt;script&gt;</code> section at the bottom, and replace <code>'YOUR_API_KEY_HERE'</code> with your actual key. This is a one-time setup.</li>
                     <li><strong>Navigate to the "Data Entry" Tab:</strong> All inputs required for the calculation are located on this page.</li>
-                    <li><strong>Fetch Company Financials:</strong> Enter a stock ticker (e.g., AAPL, MSFT) and click the "Fetch Data" button to automatically populate key financial fields.</li>
+                    <li><strong>Fetch Company Financials:</strong> Enter a stock ticker (e.g., AAPL, MSFT) and click the "Fetch Data" button to automatically populate key financial fields, including the company's Beta and the current Risk-Free Rate.</li>
                     <li><strong>Provide Your Assumptions:</strong> Input your estimates for the company's growth, margins, and other variables.</li>
                     <li><strong>Calculate & View Results:</strong> Once all fields are filled, click the "Calculate & View Dashboard" button. You will automatically be taken to the "Dashboard" tab to see the detailed results.</li>
                 </ol>
@@ -120,9 +120,9 @@
                     <!-- Section 3: WACC Calculation -->
                     <div>
                         <h2 class="text-xl font-semibold text-white mb-2 border-b border-gray-700 pb-2">Discount Rate (WACC) Calculation</h2>
-                        <p class="info-note">The Beta value is fetched automatically. Other values use standard assumptions. Adjust as needed.</p>
+                        <p class="info-note">Risk-Free Rate (10-Yr Treasury) and Beta are fetched automatically. Other values use standard assumptions. Adjust as needed.</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                             <div class="input-group"><label for="riskFreeRate" class="font-medium">Risk-Free Rate (%)</label><input type="number" id="riskFreeRate" class="input-field wacc-input" value="4.5" step="0.01"></div>
+                             <div class="input-group"><label for="riskFreeRate" class="font-medium">Risk-Free Rate (%)</label><input type="number" id="riskFreeRate" class="input-field wacc-input" placeholder="0.00" step="0.01"></div>
                              <div class="input-group"><label for="beta" class="font-medium">Beta</label><input type="number" id="beta" class="input-field wacc-input" placeholder="0.00" step="0.01"></div>
                              <div class="input-group"><label for="equityRiskPremium" class="font-medium">Equity Risk Premium (%)</label><input type="number" id="equityRiskPremium" class="input-field wacc-input" value="5.5" step="0.01"></div>
                              <div class="input-group"><label for="costOfDebt" class="font-medium">Pre-Tax Cost of Debt (%)</label><input type="number" id="costOfDebt" class="input-field wacc-input" value="5.0" step="0.01"></div>
@@ -242,7 +242,7 @@
                     showModal('Error', 'Please enter a stock ticker.');
                     return;
                 }
-                if (apiKey === 'YOUR_API_KEY_HERE') {
+                if (apiKey === 'V93E6F7M68NMFR1Y') {
                     showModal('API Key Required', 'Please add your free Alpha Vantage API key to the script file. See the README tab for instructions.');
                     return;
                 }
@@ -254,16 +254,19 @@
                 try {
                     const overviewUrl = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${ticker}&apikey=${apiKey}`;
                     const quoteUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${apiKey}`;
+                    const treasuryUrl = `https://www.alphavantage.co/query?function=TREASURY_YIELD&interval=monthly&maturity=10year&apikey=${apiKey}`;
 
-                    const [overviewResponse, quoteResponse] = await Promise.all([
+                    const [overviewResponse, quoteResponse, treasuryResponse] = await Promise.all([
                         fetch(overviewUrl),
-                        fetch(quoteUrl)
+                        fetch(quoteUrl),
+                        fetch(treasuryUrl)
                     ]);
 
                     const overviewData = await overviewResponse.json();
                     const quoteData = await quoteResponse.json();
+                    const treasuryData = await treasuryResponse.json();
 
-                    if (overviewData['Note'] || quoteData['Note']) {
+                    if (overviewData['Note'] || quoteData['Note'] || treasuryData['Note']) {
                          throw new Error('API limit reached. Please try again later.');
                     }
                     if (!overviewData.Symbol) {
@@ -278,7 +281,12 @@
                     document.getElementById('revenue').value = toMillions(overviewData.RevenueTTM);
                     document.getElementById('cash').value = toMillions(overviewData.CashAndShortTermInvestments);
                     document.getElementById('debt').value = toMillions(overviewData.LongTermDebt + overviewData.ShortTermDebt);
+                    
+                    // Populate WACC fields
                     document.getElementById('beta').value = parseFloat(overviewData.Beta).toFixed(2);
+                    if (treasuryData.data && treasuryData.data.length > 0) {
+                        document.getElementById('riskFreeRate').value = parseFloat(treasuryData.data[0].value).toFixed(2);
+                    }
                     
                     showModal('Success', `Successfully fetched data for ${overviewData.Name} (${overviewData.Symbol}).`);
 
