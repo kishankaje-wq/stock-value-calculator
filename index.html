@@ -3,373 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Intrinsic Value Calculator</title>
+    <title>Moneycessity Stock Intrinsic Value Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .card {
-            background-color: #1f2937; /* bg-gray-800 */
-            border-radius: 0.75rem; /* rounded-xl */
-            padding: 2rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .input-field {
-            background-color: #374151; /* bg-gray-700 */
-            color: #d1d5db; /* text-gray-300 */
-            border: 1px solid #4b5563; /* border-gray-600 */
-            border-radius: 0.5rem; /* rounded-lg */
-            padding: 0.75rem 1rem;
-            width: 100%;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: #3b82f6; /* focus:border-blue-500 */
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-        }
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem; /* rounded-lg */
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-        .btn:active {
-            transform: scale(0.98);
-        }
-        .btn-primary {
-            background-color: #3b82f6; /* bg-blue-600 */
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #2563eb; /* hover:bg-blue-700 */
-        }
-        .btn-secondary {
-            background-color: #4b5563; /* bg-gray-600 */
-            color: white;
-        }
-        .btn-secondary:hover {
-            background-color: #6b7280; /* hover:bg-gray-500 */
-        }
-        .output-value {
-            font-size: 1.875rem; /* text-3xl */
-            font-weight: 700;
-            color: #2dd4bf; /* text-teal-400 */
-        }
-        .upside { color: #4ade80; /* text-green-400 */ }
-        .downside { color: #f87171; /* text-red-400 */ }
+        body { font-family: 'Inter', sans-serif; }
+        .card { background-color: #1f2937; border-radius: 0.75rem; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .input-field { background-color: #374151; color: #d1d5db; border: 1px solid #4b5563; border-radius: 0.5rem; padding: 0.75rem 1rem; width: 100%; transition: border-color 0.2s, box-shadow 0.2s; }
+        .input-field:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s, transform 0.1s; text-align: center; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background-color: #3b82f6; color: white; }
+        .btn-primary:hover { background-color: #2563eb; }
+        .btn-secondary { background-color: #4b5563; color: white; }
+        .btn-secondary:hover { background-color: #6b7280; }
+        .tab-btn { padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+        .tab-btn.active { border-color: #3b82f6; color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .buy { color: #4ade80; background-color: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80 }
+        .sell { color: #f87171; background-color: rgba(248, 113, 113, 0.1); border: 1px solid #f87171 }
+        .hold { color: #facc15; background-color: rgba(250, 204, 21, 0.1); border: 1px solid #facc15 }
+        .prose { color: #d1d5db; }
+        .prose h2 { font-size: 1.5rem; font-weight: 600; color: #fff; border-bottom: 1px solid #4b5563; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        .prose h3 { font-size: 1.25rem; font-weight: 600; color: #fff; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .prose p { line-height: 1.6; }
+        .prose ul { list-style-type: disc; padding-left: 1.5rem; }
+        .prose li { margin-bottom: 0.5rem; }
+        .prose code { background-color: #374151; color: #e5e7eb; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.9em; }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gray-900 text-gray-200 min-h-screen p-4">
 
-    <main class="w-full max-w-6xl mx-auto space-y-8">
+    <main class="w-full max-w-7xl mx-auto space-y-6">
         <header class="text-center">
-            <h1 class="text-4xl font-bold text-white">Stock Intrinsic Value Calculator</h1>
-            <p class="text-lg text-gray-400 mt-2">Based on a 10-Year Discounted Free Cash Flow (DFCF) Model</p>
+            <h1 class="text-4xl font-bold text-white">Moneycessity Stock Intrinsic Value Calculator</h1>
+            <p class="text-lg text-gray-400 mt-2">A comprehensive valuation tool based on your spreadsheet model.</p>
         </header>
 
-        <!-- Main Calculator Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            
-            <!-- Input Card -->
-            <div class="lg:col-span-2 card">
-                <h2 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-4">Company Data & Assumptions</h2>
-                <form id="calculator-form" class="space-y-4">
-                    <!-- Stock and Financials -->
-                    <div class="input-group">
-                        <label for="stock-ticker" class="font-medium text-gray-300">Stock Ticker</label>
-                        <input type="text" id="stock-ticker" class="input-field" placeholder="e.g., AAPL">
-                    </div>
-                    <div class="input-group">
-                        <label for="current-price" class="font-medium text-gray-300">Current Stock Price ($)</label>
-                        <input type="number" id="current-price" class="input-field" placeholder="150.00" step="0.01">
-                    </div>
-                    <div class="input-group">
-                        <label for="shares-outstanding" class="font-medium text-gray-300">Shares Outstanding (in Millions)</label>
-                        <input type="number" id="shares-outstanding" class="input-field" placeholder="16000">
-                    </div>
-                    <div class="input-group">
-                        <label for="free-cash-flow" class="font-medium text-gray-300">Free Cash Flow (TTM, in Millions $)</label>
-                        <input type="number" id="free-cash-flow" class="input-field" placeholder="95000">
-                    </div>
-                    <div class="input-group">
-                        <label for="cash-equivalents" class="font-medium text-gray-300">Cash & Equivalents (in Millions $)</label>
-                        <input type="number" id="cash-equivalents" class="input-field" placeholder="60000">
-                    </div>
-                     <div class="input-group">
-                        <label for="total-debt" class="font-medium text-gray-300">Total Debt (in Millions $)</label>
-                        <input type="number" id="total-debt" class="input-field" placeholder="120000">
-                    </div>
+        <!-- Tabs -->
+        <div class="flex flex-wrap justify-center items-center gap-4 bg-gray-800 p-2 rounded-lg">
+            <button id="tab-btn-readme" class="tab-btn active">README</button>
+            <button id="tab-btn-data" class="tab-btn">Data Entry</button>
+            <button id="tab-btn-dashboard" class="tab-btn">Dashboard</button>
+        </div>
 
-                    <!-- Assumptions -->
-                    <h3 class="text-xl font-semibold text-white pt-6 mb-2 border-t border-gray-700">Growth & Discount Rates</h3>
-                    <div class="input-group">
-                        <label for="growth-rate-5y" class="font-medium text-gray-300">Growth Rate (Years 1-5) (%)</label>
-                        <input type="number" id="growth-rate-5y" class="input-field" placeholder="12">
-                    </div>
-                    <div class="input-group">
-                        <label for="growth-rate-10y" class="font-medium text-gray-300">Growth Rate (Years 6-10) (%)</label>
-                        <input type="number" id="growth-rate-10y" class="input-field" placeholder="8">
-                    </div>
-                     <div class="input-group">
-                        <label for="terminal-rate" class="font-medium text-gray-300">Terminal Growth Rate (%)</label>
-                        <input type="number" id="terminal-rate" class="input-field" placeholder="3">
-                    </div>
-                    <div class="input-group">
-                        <label for="discount-rate" class="font-medium text-gray-300">Discount Rate (%)</label>
-                        <input type="number" id="discount-rate" class="input-field" placeholder="10">
-                    </div>
+        <!-- Tab Content -->
+        <div class="card">
+            <!-- README Content -->
+            <div id="tab-content-readme" class="tab-content active prose">
+                <h2>Welcome to the Stock Intrinsic Value Calculator</h2>
+                <p>
+                    This tool is designed to provide an estimate of a company's intrinsic value based on a 10-Year Discounted Free Cash Flow (DFCF) model. It is a web-based replica of the core functionality found in the "KK Prototype Moneycessity" spreadsheet.
+                </p>
 
-                    <!-- Action Buttons -->
-                    <div class="flex gap-4 pt-6">
-                        <button type="button" id="calculate-btn" class="btn btn-primary w-full">Calculate</button>
-                        <button type="reset" id="clear-btn" class="btn btn-secondary w-full">Clear</button>
-                    </div>
-                </form>
-                 <p id="error-message" class="text-red-400 mt-4 text-center font-medium"></p>
+                <h3>Methodology: Discounted Free Cash Flow (DFCF)</h3>
+                <p>
+                    The DFCF model is a valuation method used to estimate the value of an investment based on its expected future cash flows. The core idea is that the value of a company is the sum of all its future free cash flows, discounted back to their present value.
+                </p>
+                <ul>
+                    <li><strong>Free Cash Flow (FCF) Projections:</strong> We project the company's FCF for the next 10 years based on user-provided growth rates.</li>
+                    <li><strong>Terminal Value:</strong> We calculate a terminal value, which represents the company's value for all years beyond the 10-year projection period.</li>
+                    <li><strong>Discount Rate:</strong> Future cash flows are discounted to their present value using a specified discount rate to account for the time value of money and risk.</li>
+                    <li><strong>Intrinsic Value:</strong> The sum of the discounted FCF and the discounted terminal value gives us the enterprise value. We then adjust for cash and debt to arrive at the equity value, which is divided by the shares outstanding to find the intrinsic value per share.</li>
+                </ul>
+
+                <h3>How to Use This Calculator</h3>
+                <ol class="list-decimal pl-6 space-y-2">
+                    <li><strong>Navigate to the "Data Entry" Tab:</strong> All inputs required for the calculation are located on this page.</li>
+                    <li><strong>Enter Company Financials:</strong> Fill in the fields for the company's stock ticker, current price, shares outstanding, latest free cash flow, cash, and total debt. All monetary values should be entered in millions.</li>
+                    <li><strong>Provide Your Assumptions:</strong> Input your estimates for the company's growth over the next 1-5 years and 6-10 years. You must also provide a terminal growth rate (the perpetual rate you expect the company to grow at after 10 years) and a discount rate.</li>
+                    <li><strong>Calculate & View Results:</strong> Once all fields are filled, click the "Calculate & View Dashboard" button. You will automatically be taken to the "Dashboard" tab to see the detailed results.</li>
+                </ol>
+
+                <h3>Disclaimer</h3>
+                <p class="text-sm text-yellow-400 bg-yellow-900/50 p-3 rounded-lg">
+                    This calculator is for educational and informational purposes only. The results generated are based on the inputs and assumptions you provide and should not be considered financial advice. Investing in the stock market involves risk, and you should always conduct your own thorough research or consult with a qualified financial advisor before making any investment decisions.
+                </p>
             </div>
 
-            <!-- Output Card -->
-            <div id="output-section" class="lg:col-span-3 card hidden">
-                <h2 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-4">Valuation Results for <span id="output-ticker" class="text-blue-400"></span></h2>
-                
-                <!-- Key Metrics -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
-                    <div>
-                        <p class="text-gray-400 text-lg">Intrinsic Value / Share</p>
-                        <p id="intrinsic-value" class="output-value">$0.00</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-400 text-lg">Upside / Downside</p>
-                        <p id="upside-downside" class="output-value text-gray-400">0.00%</p>
-                    </div>
-                </div>
+            <!-- Data Entry Content -->
+            <div id="tab-content-data" class="tab-content">
+                <!-- Content will be added in subsequent steps -->
+                 <p>Data Entry form will be built here.</p>
+            </div>
 
-                <!-- Margin of Safety -->
-                <div class="mt-8">
-                     <h3 class="text-xl font-semibold text-white mb-4 text-center">Margin of Safety Prices</h3>
-                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center bg-gray-900/50 p-4 rounded-lg">
-                        <div>
-                            <p class="font-bold text-blue-300">10%</p>
-                            <p id="mos-10" class="font-mono text-lg">$0.00</p>
-                        </div>
-                         <div>
-                            <p class="font-bold text-green-300">20%</p>
-                            <p id="mos-20" class="font-mono text-lg">$0.00</p>
-                        </div>
-                        <div>
-                            <p class="font-bold text-yellow-300">30%</p>
-                            <p id="mos-30" class="font-mono text-lg">$0.00</p>
-                        </div>
-                        <div>
-                            <p class="font-bold text-red-300">50%</p>
-                            <p id="mos-50" class="font-mono text-lg">$0.00</p>
-                        </div>
-                     </div>
-                </div>
-
-                <!-- DFCF Projection Table -->
-                 <div class="mt-8 overflow-x-auto">
-                    <h3 class="text-xl font-semibold text-white mb-4">10-Year DFCF Projection <span class="text-sm text-gray-400 font-normal">(values in millions)</span></h3>
-                    <table class="w-full text-left whitespace-nowrap">
-                        <thead class="bg-gray-700/50 text-gray-300">
-                            <tr>
-                                <th class="p-3 rounded-l-lg">Year</th>
-                                <th class="p-3">Free Cash Flow</th>
-                                <th class="p-3">Discounted FCF</th>
-                            </tr>
-                        </thead>
-                        <tbody id="projection-table" class="divide-y divide-gray-700">
-                           <!-- Rows will be generated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
+            <!-- Dashboard Content -->
+            <div id="tab-content-dashboard" class="tab-content">
+                 <!-- Content will be added in subsequent steps -->
+                 <p>Results dashboard will be built here.</p>
             </div>
         </div>
     </main>
 
     <script>
-        // --- DOM Element References ---
-        const calculateBtn = document.getElementById('calculate-btn');
-        const clearBtn = document.getElementById('clear-btn');
-        const form = document.getElementById('calculator-form');
-        const outputSection = document.getElementById('output-section');
-        const errorMessage = document.getElementById('error-message');
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = [
+                { btn: document.getElementById('tab-btn-readme'), content: document.getElementById('tab-content-readme') },
+                { btn: document.getElementById('tab-btn-data'), content: document.getElementById('tab-content-data') },
+                { btn: document.getElementById('tab-btn-dashboard'), content: document.getElementById('tab-content-dashboard') }
+            ];
 
-        const inputs = {
-            stockTicker: document.getElementById('stock-ticker'),
-            currentPrice: document.getElementById('current-price'),
-            sharesOutstanding: document.getElementById('shares-outstanding'),
-            freeCashFlow: document.getElementById('free-cash-flow'),
-            cashEquivalents: document.getElementById('cash-equivalents'),
-            totalDebt: document.getElementById('total-debt'),
-            growthRate5y: document.getElementById('growth-rate-5y'),
-            growthRate10y: document.getElementById('growth-rate-10y'),
-            terminalRate: document.getElementById('terminal-rate'),
-            discountRate: document.getElementById('discount-rate')
-        };
-        
-        const outputs = {
-            ticker: document.getElementById('output-ticker'),
-            intrinsicValue: document.getElementById('intrinsic-value'),
-            upsideDownside: document.getElementById('upside-downside'),
-            mos10: document.getElementById('mos-10'),
-            mos20: document.getElementById('mos-20'),
-            mos30: document.getElementById('mos-30'),
-            mos50: document.getElementById('mos-50'),
-            projectionTable: document.getElementById('projection-table')
-        };
-        
-        // --- Event Listeners ---
-        calculateBtn.addEventListener('click', handleCalculation);
-        clearBtn.addEventListener('click', clearResults);
-
-        // --- Main Calculation Logic ---
-        function handleCalculation() {
-            // 1. Get and Validate Inputs
-            const values = getAndValidateInputs();
-            if (!values) {
-                return; // Stop if validation fails
-            }
-
-            // 2. Perform DFCF Calculation
-            const results = performDFCFA(values);
-            
-            // 3. Display Results
-            displayResults(results, values);
-        }
-
-        function getAndValidateInputs() {
-            const parsedValues = {};
-            let isValid = true;
-            errorMessage.textContent = '';
-
-            for (const key in inputs) {
-                const inputElement = inputs[key];
-                const value = inputElement.value.trim();
-                
-                if (value === '' && key !== 'stockTicker') {
-                    inputElement.style.borderColor = '#f87171'; // red-400
-                    isValid = false;
-                } else {
-                     inputElement.style.borderColor = '#4b5563'; // gray-600
-                }
-                
-                parsedValues[key] = key === 'stockTicker' ? value : parseFloat(value);
-            }
-
-            if (!isValid) {
-                errorMessage.textContent = 'Please fill out all required fields.';
-                return null;
-            }
-
-            return parsedValues;
-        }
-
-        function performDFCFA(v) {
-            const discountRate = v.discountRate / 100;
-            const terminalRate = v.terminalRate / 100;
-            const growthRate5y = v.growthRate5y / 100;
-            const growthRate10y = v.growthRate10y / 100;
-            
-            let currentFCF = v.freeCashFlow;
-            let discountedFCFSum = 0;
-            const projections = [];
-
-            // Project and discount FCF for 10 years
-            for (let year = 1; year <= 10; year++) {
-                const growthRate = year <= 5 ? growthRate5y : growthRate10y;
-                currentFCF *= (1 + growthRate);
-                
-                const discountedFCF = currentFCF / Math.pow(1 + discountRate, year);
-                discountedFCFSum += discountedFCF;
-                
-                projections.push({
-                    year,
-                    fcf: currentFCF,
-                    discountedFcf: discountedFCF
+            function switchTab(activeIndex) {
+                tabs.forEach((tab, index) => {
+                    const isActive = index === activeIndex;
+                    tab.btn.classList.toggle('active', isActive);
+                    tab.content.classList.toggle('active', isActive);
                 });
             }
-            
-            // Calculate Terminal Value
-            const terminalValue = (currentFCF * (1 + terminalRate)) / (discountRate - terminalRate);
-            const discountedTerminalValue = terminalValue / Math.pow(1 + discountRate, 10);
-            
-            // Calculate Equity Value and Intrinsic Value per Share
-            const enterpriseValue = discountedFCFSum + discountedTerminalValue;
-            const equityValue = enterpriseValue + v.cashEquivalents - v.totalDebt;
-            const intrinsicValue = equityValue / v.sharesOutstanding;
-            
-            return {
-                intrinsicValue,
-                projections
-            };
-        }
 
-        function displayResults(results, inputs) {
-            const { intrinsicValue, projections } = results;
-            const { currentPrice, stockTicker } = inputs;
-            
-            // Show the output card
-            outputSection.classList.remove('hidden');
-
-            // Format numbers for display
-            const formatCurrency = (num) => `$${num.toFixed(2)}`;
-            const formatPercent = (num) => `${(num * 100).toFixed(2)}%`;
-
-            // Update header and key metrics
-            outputs.ticker.textContent = stockTicker.toUpperCase() || 'N/A';
-            outputs.intrinsicValue.textContent = formatCurrency(intrinsicValue);
-            
-            const upside = (intrinsicValue - currentPrice) / currentPrice;
-            outputs.upsideDownside.textContent = formatPercent(upside);
-            
-            // Apply color based on upside/downside
-            outputs.upsideDownside.classList.remove('upside', 'downside', 'text-gray-400');
-            if (upside > 0) {
-                outputs.upsideDownside.classList.add('upside');
-            } else if (upside < 0) {
-                outputs.upsideDownside.classList.add('downside');
-            } else {
-                outputs.upsideDownside.classList.add('text-gray-400');
-            }
-
-            // Update Margin of Safety values
-            outputs.mos10.textContent = formatCurrency(intrinsicValue * 0.90);
-            outputs.mos20.textContent = formatCurrency(intrinsicValue * 0.80);
-            outputs.mos30.textContent = formatCurrency(intrinsicValue * 0.70);
-            outputs.mos50.textContent = formatCurrency(intrinsicValue * 0.50);
-            
-            // Populate projection table
-            outputs.projectionTable.innerHTML = ''; // Clear previous results
-            projections.forEach(p => {
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-gray-800/50';
-                row.innerHTML = `
-                    <td class="p-3 font-medium">${p.year}</td>
-                    <td class="p-3 font-mono">${formatCurrency(p.fcf)}M</td>
-                    <td class="p-3 font-mono">${formatCurrency(p.discountedFcf)}M</td>
-                `;
-                outputs.projectionTable.appendChild(row);
+            tabs.forEach((tab, index) => {
+                tab.btn.addEventListener('click', () => switchTab(index));
             });
-        }
-        
-        function clearResults() {
-             outputSection.classList.add('hidden');
-             errorMessage.textContent = '';
-             for (const key in inputs) {
-                inputs[key].style.borderColor = '#4b5563'; // gray-600
-             }
-        }
 
+            // Set initial tab
+            switchTab(0);
+        });
     </script>
 </body>
 </html>
+
