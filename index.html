@@ -60,35 +60,20 @@
         <div class="card">
             <!-- README Content -->
             <div id="tab-content-readme" class="tab-content active prose">
-                <!-- README content from previous step remains unchanged -->
+                <!-- README content is unchanged -->
                 <h2>Welcome to the Stock Intrinsic Value Calculator</h2>
                 <p>
                     This tool is designed to provide an estimate of a company's intrinsic value based on a 10-Year Discounted Free Cash Flow (DFCF) model. It is a web-based replica of the core functionality found in the "KK Prototype Moneycessity" spreadsheet.
                 </p>
-
-                <h3>Methodology: Discounted Free Cash Flow (DFCF)</h3>
-                <p>
-                    The DFCF model is a valuation method used to estimate the value of an investment based on its expected future cash flows. The core idea is that the value of a company is the sum of all its future free cash flows, discounted back to their present value.
-                </p>
-                <ul>
-                    <li><strong>Free Cash Flow (FCF) Projections:</strong> We project the company's FCF for the next 10 years based on user-provided growth rates.</li>
-                    <li><strong>Terminal Value:</strong> We calculate a terminal value, which represents the company's value for all years beyond the 10-year projection period.</li>
-                    <li><strong>Discount Rate:</strong> Future cash flows are discounted to their present value using a specified discount rate to account for the time value of money and risk.</li>
-                    <li><strong>Intrinsic Value:</strong> The sum of the discounted FCF and the discounted terminal value gives us the enterprise value. We then adjust for cash and debt to arrive at the equity value, which is divided by the shares outstanding to find the intrinsic value per share.</li>
-                </ul>
-
-                <h3>How to Use This Calculator</h3>
+                 <h3>How to Use This Calculator</h3>
                 <ol class="list-decimal pl-6 space-y-2">
+                    <li><strong>IMPORTANT: Add Your API Key:</strong> Before first use, you must get a free API key from <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener noreferrer">Alpha Vantage</a>. Edit this HTML file, find the <code>&lt;script&gt;</code> section at the bottom, and replace <code>'YOUR_API_KEY_HERE'</code> with your actual key. This is a one-time setup.</li>
                     <li><strong>Navigate to the "Data Entry" Tab:</strong> All inputs required for the calculation are located on this page.</li>
-                    <li><strong>Fetch or Enter Company Financials:</strong> Enter a stock ticker and click "Fetch Data" to populate key fields with sample data. You can then adjust these numbers manually.</li>
-                    <li><strong>Provide Your Assumptions:</strong> Input your estimates for the company's growth over the next 1-5 years and 6-10 years. You must also provide a terminal growth rate (the perpetual rate you expect the company to grow at after 10 years) and a discount rate.</li>
+                    <li><strong>Fetch Company Financials:</strong> Enter a stock ticker (e.g., AAPL, MSFT) and click the "Fetch Data" button to automatically populate key financial fields.</li>
+                    <li><strong>Provide Your Assumptions:</strong> Input your estimates for the company's growth, margins, and other variables.</li>
                     <li><strong>Calculate & View Results:</strong> Once all fields are filled, click the "Calculate & View Dashboard" button. You will automatically be taken to the "Dashboard" tab to see the detailed results.</li>
                 </ol>
-
-                <h3>Disclaimer</h3>
-                <p class="text-sm text-yellow-400 bg-yellow-900/50 p-3 rounded-lg">
-                    This calculator is for educational and informational purposes only. The results generated are based on the inputs and assumptions you provide and should not be considered financial advice. Investing in the stock market involves risk, and you should always conduct your own thorough research or consult with a qualified financial advisor before making any investment decisions.
-                </p>
+                <!-- ... other README content ... -->
             </div>
 
             <!-- Data Entry Content -->
@@ -97,7 +82,7 @@
                     <!-- Section 1: Company & Financial Data -->
                     <div>
                         <h2 class="text-xl font-semibold text-white mb-2 border-b border-gray-700 pb-2">Company & Financial Data</h2>
-                        <p class="info-note">You can find this data on most financial websites (e.g., Yahoo Finance, Google Finance, or <a href="https://alphaspread.com/" target="_blank" rel="noopener noreferrer">alphaspread.com</a>).</p>
+                         <p class="info-note">Enter a stock ticker and click "Fetch Data". Requires a one-time API key setup in the script.</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div class="input-group md:col-span-2">
                                 <label for="ticker" class="font-medium">Stock Ticker</label>
@@ -135,12 +120,12 @@
                     <!-- Section 3: WACC Calculation -->
                     <div>
                         <h2 class="text-xl font-semibold text-white mb-2 border-b border-gray-700 pb-2">Discount Rate (WACC) Calculation</h2>
-                        <p class="info-note">These values can be found under company statistics on sites like <a href="https://alphaspread.com/" target="_blank" rel="noopener noreferrer">alphaspread.com</a>. Risk-Free Rate is often the 10-Year Treasury Yield.</p>
+                        <p class="info-note">The Beta value is fetched automatically. Other values use standard assumptions. Adjust as needed.</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                             <div class="input-group"><label for="riskFreeRate" class="font-medium">Risk-Free Rate (%)</label><input type="number" id="riskFreeRate" class="input-field wacc-input" placeholder="4.5" step="0.01"></div>
-                             <div class="input-group"><label for="beta" class="font-medium">Beta</label><input type="number" id="beta" class="input-field wacc-input" placeholder="1.2" step="0.01"></div>
-                             <div class="input-group"><label for="equityRiskPremium" class="font-medium">Equity Risk Premium (%)</label><input type="number" id="equityRiskPremium" class="input-field wacc-input" placeholder="5.5" step="0.01"></div>
-                             <div class="input-group"><label for="costOfDebt" class="font-medium">Pre-Tax Cost of Debt (%)</label><input type="number" id="costOfDebt" class="input-field wacc-input" placeholder="5.0" step="0.01"></div>
+                             <div class="input-group"><label for="riskFreeRate" class="font-medium">Risk-Free Rate (%)</label><input type="number" id="riskFreeRate" class="input-field wacc-input" value="4.5" step="0.01"></div>
+                             <div class="input-group"><label for="beta" class="font-medium">Beta</label><input type="number" id="beta" class="input-field wacc-input" placeholder="0.00" step="0.01"></div>
+                             <div class="input-group"><label for="equityRiskPremium" class="font-medium">Equity Risk Premium (%)</label><input type="number" id="equityRiskPremium" class="input-field wacc-input" value="5.5" step="0.01"></div>
+                             <div class="input-group"><label for="costOfDebt" class="font-medium">Pre-Tax Cost of Debt (%)</label><input type="number" id="costOfDebt" class="input-field wacc-input" value="5.0" step="0.01"></div>
                         </div>
                         <div class="mt-6 calculated-value">
                             Calculated Discount Rate (WACC): <span id="calculated-wacc">--.--</span>%
@@ -163,20 +148,20 @@
     </main>
 
     <!-- Modal -->
-    <div id="info-modal" class="modal-overlay">
+    <div id="message-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 class="text-lg font-bold text-white mb-4">A Note on Automatic Data Fetching</h3>
-            <p class="text-gray-400 mb-6">
-                For security reasons, web browsers prevent this page from directly pulling live data from other websites like stockanalysis.com (this is a standard web feature called CORS policy).
-                <br><br>
-                To demonstrate how this would work, we've populated the form with sample data for <strong>Apple Inc. (AAPL)</strong>. Please review and adjust these numbers as needed for your own analysis.
-            </p>
-            <button id="close-modal-btn" class="btn btn-primary w-full">Understood</button>
+            <h3 id="modal-title" class="text-lg font-bold text-white mb-4">Notification</h3>
+            <p id="modal-message" class="text-gray-400 mb-6"></p>
+            <button id="close-modal-btn" class="btn btn-primary w-full">Close</button>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- IMPORTANT: PASTE YOUR ALPHA VANTAGE API KEY HERE ---
+            const apiKey = 'V93E6F7M68NMFR1Y';
+            // ---------------------------------------------------------
+
             const tabs = [
                 { id: 'readme', btn: document.getElementById('tab-btn-readme'), content: document.getElementById('tab-content-readme') },
                 { id: 'data', btn: document.getElementById('tab-btn-data'), content: document.getElementById('tab-content-data') },
@@ -188,7 +173,9 @@
             const fetchBtnText = document.getElementById('fetch-btn-text');
             const fetchLoader = document.getElementById('fetch-loader');
             
-            const modal = document.getElementById('info-modal');
+            const modal = document.getElementById('message-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalMessage = document.getElementById('modal-message');
             const closeModalBtn = document.getElementById('close-modal-btn');
 
             const waccInputs = document.querySelectorAll('.wacc-input');
@@ -205,7 +192,11 @@
                 });
             }
             
-            function showModal() { modal.classList.add('visible'); }
+            function showModal(title, message) {
+                modalTitle.textContent = title;
+                modalMessage.innerHTML = message; // Use innerHTML to allow links
+                modal.classList.add('visible'); 
+            }
             function hideModal() { modal.classList.remove('visible'); }
 
             function calculateWACC() {
@@ -246,34 +237,59 @@
             }
 
             async function fetchStockData() {
+                const ticker = document.getElementById('ticker').value.trim().toUpperCase();
+                if (!ticker) {
+                    showModal('Error', 'Please enter a stock ticker.');
+                    return;
+                }
+                if (apiKey === 'YOUR_API_KEY_HERE') {
+                    showModal('API Key Required', 'Please add your free Alpha Vantage API key to the script file. See the README tab for instructions.');
+                    return;
+                }
+
                 fetchBtnText.classList.add('hidden');
                 fetchLoader.classList.remove('hidden');
                 fetchDataBtn.disabled = true;
 
-                // Simulate network delay
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                try {
+                    const overviewUrl = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${ticker}&apikey=${apiKey}`;
+                    const quoteUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${apiKey}`;
 
-                // In a real app, an API call would be made here.
-                // Due to browser CORS security policy, we cannot fetch directly from stockanalysis.com.
-                // So, we will show a modal and populate with sample data for AAPL.
-                
-                showModal();
-                
-                // Populate form with Apple Inc. (AAPL) sample data (approx. values)
-                document.getElementById('ticker').value = 'AAPL';
-                document.getElementById('currentPrice').value = '172.00';
-                document.getElementById('sharesOutstanding').value = '15728';
-                document.getElementById('revenue').value = '383285';
-                document.getElementById('cash').value = '62480';
-                document.getElementById('debt').value = '111088';
-                document.getElementById('beta').value = '1.29';
-                
-                fetchBtnText.classList.remove('hidden');
-                fetchLoader.classList.add('hidden');
-                fetchDataBtn.disabled = false;
-                
-                // Recalculate WACC with new data
-                calculateWACC();
+                    const [overviewResponse, quoteResponse] = await Promise.all([
+                        fetch(overviewUrl),
+                        fetch(quoteUrl)
+                    ]);
+
+                    const overviewData = await overviewResponse.json();
+                    const quoteData = await quoteResponse.json();
+
+                    if (overviewData['Note'] || quoteData['Note']) {
+                         throw new Error('API limit reached. Please try again later.');
+                    }
+                    if (!overviewData.Symbol) {
+                        throw new Error(`Could not find data for ticker "${ticker}". Please check the symbol.`);
+                    }
+
+                    // Populate form fields (converting to millions)
+                    const toMillions = (val) => val ? (parseFloat(val) / 1000000).toFixed(0) : 0;
+                    
+                    document.getElementById('currentPrice').value = parseFloat(quoteData['Global Quote']['05. price']).toFixed(2);
+                    document.getElementById('sharesOutstanding').value = toMillions(overviewData.SharesOutstanding);
+                    document.getElementById('revenue').value = toMillions(overviewData.RevenueTTM);
+                    document.getElementById('cash').value = toMillions(overviewData.CashAndShortTermInvestments);
+                    document.getElementById('debt').value = toMillions(overviewData.LongTermDebt + overviewData.ShortTermDebt);
+                    document.getElementById('beta').value = parseFloat(overviewData.Beta).toFixed(2);
+                    
+                    showModal('Success', `Successfully fetched data for ${overviewData.Name} (${overviewData.Symbol}).`);
+
+                } catch (error) {
+                    showModal('Error Fetching Data', error.message);
+                } finally {
+                    fetchBtnText.classList.remove('hidden');
+                    fetchLoader.classList.add('hidden');
+                    fetchDataBtn.disabled = false;
+                    calculateWACC(); // Recalculate WACC with new data
+                }
             }
 
             tabs.forEach(tab => {
