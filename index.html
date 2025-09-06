@@ -12,6 +12,7 @@
         .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
         .input-field { background-color: #374151; color: #d1d5db; border: 1px solid #4b5563; border-radius: 0.5rem; padding: 0.75rem 1rem; width: 100%; transition: border-color 0.2s, box-shadow 0.2s; }
         .input-field:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); }
+        .input-field.read-only { background-color: #2b3544; cursor: not-allowed; }
         .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s, transform 0.1s; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
         .btn:active { transform: scale(0.98); }
         .btn-primary { background-color: #3b82f6; color: white; }
@@ -31,7 +32,7 @@
         .prose code { background-color: #374151; color: #e5e7eb; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.9em; }
         .calculated-value { background-color: #111827; padding: 0.75rem 1rem; border-radius: 0.5rem; text-align: center; font-weight: 600; font-size: 1.1rem; border: 1px dashed #4b5563;}
         .calculated-value span { color: #3b82f6; }
-        .info-note { font-size: 0.875rem; color: #9ca3af; margin-top: -0.5rem; margin-bottom: 1rem; }
+        .info-note { font-size: 0.875rem; color: #9ca3af; margin-top: 0.5rem; margin-bottom: 1rem; }
         .info-note a { color: #60a5fa; text-decoration: underline; }
         .info-note a:hover { color: #3b82f6; }
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 50; visibility: hidden; opacity: 0; transition: visibility 0s 0.3s, opacity 0.3s; }
@@ -53,58 +54,63 @@
         <div class="flex flex-wrap justify-center items-center gap-4 bg-gray-800 p-2 rounded-lg">
             <button id="tab-btn-readme" class="tab-btn active">README</button>
             <button id="tab-btn-data" class="tab-btn">Data Entry</button>
-            <button id="tab-btn-dashboard" class="tab-btn">Dashboard</button>
+            <button id="tab-btn-dashboard" class="tab-btn">Dashboard & Assumptions</button>
         </div>
 
         <!-- Tab Content -->
         <div class="card">
             <!-- README Content -->
             <div id="tab-content-readme" class="tab-content active prose">
-                <!-- README content is unchanged -->
-                <h2>Welcome to the Stock Intrinsic Value Calculator</h2>
+                 <h2>Welcome to the Stock Intrinsic Value Calculator</h2>
                 <p>
-                    This tool is designed to provide an estimate of a company's intrinsic value based on a 10-Year Discounted Free Cash Flow (DFCF) model. It is a web-based replica of the core functionality found in the "KK Prototype Moneycessity" spreadsheet.
+                    This tool provides an estimate of a company's intrinsic value based on a 10-Year Discounted Free Cash Flow (DFCF) model.
                 </p>
                  <h3>How to Use This Calculator</h3>
                 <ol class="list-decimal pl-6 space-y-2">
-                    <li><strong>IMPORTANT: Add Your API Key:</strong> Before first use, you must get a free API key from <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener noreferrer">Alpha Vantage</a>. Edit this HTML file, find the <code>&lt;script&gt;</code> section at the bottom, and replace <code>'YOUR_API_KEY_HERE'</code> with your actual key. This is a one-time setup.</li>
-                    <li><strong>Navigate to the "Data Entry" Tab:</strong> All inputs required for the calculation are located on this page.</li>
-                    <li><strong>Fetch Company Financials:</strong> Enter a stock ticker (e.g., AAPL, MSFT) and click the "Fetch Data" button to automatically populate key financial fields, including the company's Beta and the current Risk-Free Rate.</li>
-                    <li><strong>Provide Your Assumptions:</strong> Input your estimates for the company's growth, margins, and other variables.</li>
-                    <li><strong>Calculate & View Results:</strong> Once all fields are filled, click the "Calculate & View Dashboard" button. You will automatically be taken to the "Dashboard" tab to see the detailed results.</li>
+                    <li><strong>IMPORTANT: Add API Key:</strong> Before first use, get a free API key from <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener noreferrer">Alpha Vantage</a>. Edit this HTML file, find the <code>&lt;script&gt;</code> section at the very bottom, and replace <code>'YOUR_API_KEY_HERE'</code> in the configuration section at the top of the script. This is a one-time setup.</li>
+                    <li><strong>Go to the "Data Entry" Tab:</strong> Start here.</li>
+                    <li><strong>Fetch Company Data:</strong> Enter a stock ticker (e.g., AAPL) and click the "Fetch Data & Go to Dashboard" button. This will automatically populate the Dashboard with live data.</li>
+                    <li><strong>Adjust Assumptions on Dashboard:</strong> On the Dashboard, review the fetched data and adjust your assumptions for the company's growth, margins, and discount rate.</li>
+                    <li><strong>Calculate:</strong> Once your assumptions are set, click the "Calculate Intrinsic Value" button on the Dashboard to see the results.</li>
                 </ol>
-                <!-- ... other README content ... -->
             </div>
 
             <!-- Data Entry Content -->
             <div id="tab-content-data" class="tab-content">
-                <form id="calc-form" class="space-y-8">
-                    <!-- Section 1: Company & Financial Data -->
+                <div class="max-w-md mx-auto text-center">
+                    <h2 class="text-2xl font-semibold text-white mb-4">Start Your Analysis</h2>
+                    <p class="text-gray-400 mb-6">Enter a stock ticker below to fetch the latest financial data and begin your valuation on the dashboard.</p>
+                    <div class="input-group">
+                        <label for="ticker" class="font-medium sr-only">Stock Ticker</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="ticker" class="input-field text-center" placeholder="Enter Ticker (e.g., AAPL)">
+                            <button type="button" id="fetch-data-btn" class="btn btn-primary w-full">
+                                <span id="fetch-btn-text">Fetch Data & Go to Dashboard</span>
+                                <div id="fetch-loader" class="loader hidden"></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="tab-content-dashboard" class="tab-content">
+                 <form id="calc-form" class="space-y-8">
+                    <!-- Section 1: Fetched Data (Read-Only) -->
                     <div>
-                        <h2 class="text-xl font-semibold text-white mb-2 border-b border-gray-700 pb-2">Company & Financial Data</h2>
-                         <p class="info-note">Enter a stock ticker and click "Fetch Data". Requires a one-time API key setup in the script.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div class="input-group md:col-span-2">
-                                <label for="ticker" class="font-medium">Stock Ticker</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="ticker" class="input-field" placeholder="Enter Ticker (e.g., AAPL) and Fetch">
-                                    <button type="button" id="fetch-data-btn" class="btn btn-secondary w-40">
-                                        <span id="fetch-btn-text">Fetch Data</span>
-                                        <div id="fetch-loader" class="loader hidden"></div>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="input-group"><label for="currentPrice" class="font-medium">Current Stock Price ($)</label><input type="number" id="currentPrice" class="input-field wacc-input" placeholder="0.00" step="0.01"></div>
-                            <div class="input-group"><label for="sharesOutstanding" class="font-medium">Shares Outstanding (M)</label><input type="number" id="sharesOutstanding" class="input-field wacc-input" placeholder="0"></div>
-                            <div class="input-group"><label for="revenue" class="font-medium">Revenue (TTM, M)</label><input type="number" id="revenue" class="input-field" placeholder="0"></div>
-                            <div class="input-group"><label for="cash" class="font-medium">Cash & Equivalents (M)</label><input type="number" id="cash" class="input-field wacc-input" placeholder="0"></div>
-                            <div class="input-group"><label for="debt" class="font-medium">Total Debt (M)</label><input type="number" id="debt" class="input-field wacc-input" placeholder="0"></div>
+                        <h2 class="text-xl font-semibold text-white mb-2 border-b border-gray-700 pb-2">Fetched Company Data for: <span id="company-name-display" class="text-blue-400">N/A</span></h2>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                            <div class="input-group"><label class="font-medium text-sm text-gray-400">Current Price ($)</label><input type="text" id="currentPrice" class="input-field read-only" readonly></div>
+                            <div class="input-group"><label class="font-medium text-sm text-gray-400">Shares (M)</label><input type="text" id="sharesOutstanding" class="input-field read-only" readonly></div>
+                            <div class="input-group"><label class="font-medium text-sm text-gray-400">Revenue (M)</label><input type="text" id="revenue" class="input-field read-only" readonly></div>
+                            <div class="input-group"><label class="font-medium text-sm text-gray-400">Cash (M)</label><input type="text" id="cash" class="input-field read-only" readonly></div>
+                            <div class="input-group"><label class="font-medium text-sm text-gray-400">Debt (M)</label><input type="text" id="debt" class="input-field read-only" readonly></div>
                         </div>
                     </div>
 
                     <!-- Section 2: DFCF Model Assumptions -->
                     <div>
-                        <h2 class="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">DFCF Model Assumptions (% of Revenue, unless specified)</h2>
+                        <h2 class="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Your Assumptions (% of Revenue, unless specified)</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div class="input-group"><label for="revGrowth1_5" class="font-medium">Revenue Growth Yrs 1-5 (%)</label><input type="number" id="revGrowth1_5" class="input-field" placeholder="12"></div>
                             <div class="input-group"><label for="revGrowth6_10" class="font-medium">Revenue Growth Yrs 6-10 (%)</label><input type="number" id="revGrowth6_10" class="input-field" placeholder="8"></div>
@@ -119,8 +125,15 @@
 
                     <!-- Section 3: WACC Calculation -->
                     <div>
-                        <h2 class="text-xl font-semibold text-white mb-2 border-b border-gray-700 pb-2">Discount Rate (WACC) Calculation</h2>
-                        <p class="info-note">Risk-Free Rate (10-Yr Treasury) and Beta are fetched automatically. Other values use standard assumptions. Adjust as needed.</p>
+                        <div class="flex items-center justify-between border-b border-gray-700 pb-2 mb-2">
+                            <h2 class="text-xl font-semibold text-white">Discount Rate (WACC) Assumptions</h2>
+                             <button type="button" id="wacc-info-btn" class="text-gray-400 hover:text-white transition" title="Show WACC calculation details">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                         <p class="info-note">Risk-Free Rate and Beta are fetched automatically but can be overridden. Other values use standard assumptions.</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                              <div class="input-group"><label for="riskFreeRate" class="font-medium">Risk-Free Rate (%)</label><input type="number" id="riskFreeRate" class="input-field wacc-input" placeholder="0.00" step="0.01"></div>
                              <div class="input-group"><label for="beta" class="font-medium">Beta</label><input type="number" id="beta" class="input-field wacc-input" placeholder="0.00" step="0.01"></div>
@@ -131,18 +144,15 @@
                             Calculated Discount Rate (WACC): <span id="calculated-wacc">--.--</span>%
                         </div>
                     </div>
-
-                    <!-- Section 4: Action Buttons -->
-                    <div class="flex justify-end gap-4 pt-4 mt-4 border-t border-gray-700">
-                        <button type="reset" class="btn btn-secondary">Clear Form</button>
-                        <button type="button" id="calculate-btn" class="btn btn-primary">Calculate & View Dashboard</button>
+                     <!-- Section 4: Placeholder for Results and Action Button -->
+                    <div id="results-section" class="space-y-8">
+                        <!-- Calculation results will be injected here by the script -->
                     </div>
-                </form>
-            </div>
 
-            <!-- Dashboard Content -->
-            <div id="tab-content-dashboard" class="tab-content">
-                 <p>Results dashboard will be built here.</p>
+                    <div class="flex justify-end gap-4 pt-4 mt-4 border-t border-gray-700">
+                        <button type="button" id="calculate-btn" class="btn btn-primary">Calculate Intrinsic Value</button>
+                    </div>
+                 </form>
             </div>
         </div>
     </main>
@@ -157,11 +167,15 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- IMPORTANT: PASTE YOUR ALPHA VANTAGE API KEY HERE ---
-            const apiKey = 'V93E6F7M68NMFR1Y';
-            // ---------------------------------------------------------
+        // ==================================================================
+        // === 1. PASTE YOUR API KEY HERE ===================================
+        // ==================================================================
+        // Get your free key from: https://www.alphavantage.co/support/#api-key
+        const apiKey = 'V93E6F7M68NMFR1Y';
+        // ==================================================================
 
+
+        document.addEventListener('DOMContentLoaded', () => {
             const tabs = [
                 { id: 'readme', btn: document.getElementById('tab-btn-readme'), content: document.getElementById('tab-content-readme') },
                 { id: 'data', btn: document.getElementById('tab-btn-data'), content: document.getElementById('tab-content-data') },
@@ -172,14 +186,14 @@
             const fetchDataBtn = document.getElementById('fetch-data-btn');
             const fetchBtnText = document.getElementById('fetch-btn-text');
             const fetchLoader = document.getElementById('fetch-loader');
+            const waccInfoBtn = document.getElementById('wacc-info-btn');
             
             const modal = document.getElementById('message-modal');
             const modalTitle = document.getElementById('modal-title');
             const modalMessage = document.getElementById('modal-message');
             const closeModalBtn = document.getElementById('close-modal-btn');
-
-            const waccInputs = document.querySelectorAll('.wacc-input');
-            const calculatedWaccEl = document.getElementById('calculated-wacc');
+            
+            const companyNameDisplay = document.getElementById('company-name-display');
 
             function switchTab(targetId) {
                 let targetIndex = tabs.findIndex(tab => tab.id === targetId);
@@ -199,15 +213,35 @@
             }
             function hideModal() { modal.classList.remove('visible'); }
 
+            function showWaccCalculationInfo() {
+                const title = "WACC Calculation Formula";
+                const message = `
+                    <p class="text-sm text-gray-400">The Weighted Average Cost of Capital (WACC) represents a firm's blended cost of capital across all sources, including equity and debt.</p>
+                    <div class="my-4 p-3 bg-gray-800 rounded-lg text-center font-mono text-sm text-blue-300">
+                        WACC = (E/V &times; Re) + (D/V &times; Rd &times; (1 - Tc))
+                    </div>
+                    <ul class="text-sm space-y-2 text-gray-400">
+                        <li><b>E/V</b>: Percentage of financing that is equity.</li>
+                        <li><b>Re</b>: Cost of Equity (calculated using CAPM).</li>
+                        <li><b>D/V</b>: Percentage of financing that is debt.</li>
+                        <li><b>Rd</b>: The firm's pre-tax Cost of Debt.</li>
+                        <li><b>Tc</b>: The corporate Tax Rate.</li>
+                    </ul>
+                `;
+                showModal(title, message);
+            }
+
             function calculateWACC() {
                 const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
-
-                const currentPrice = getVal('currentPrice');
-                const sharesOutstanding = getVal('sharesOutstanding');
-                const cash = getVal('cash');
-                const debt = getVal('debt');
-                const taxRate = getVal('taxRate') / 100;
                 
+                // Read-only fields are on dashboard, need to reference them from there
+                const currentPrice = parseFloat(document.getElementById('currentPrice').value) || 0;
+                const sharesOutstanding = parseFloat(document.getElementById('sharesOutstanding').value) || 0;
+                const cash = parseFloat(document.getElementById('cash').value) || 0;
+                const debt = parseFloat(document.getElementById('debt').value) || 0;
+
+                // Assumption fields
+                const taxRate = getVal('taxRate') / 100;
                 const riskFreeRate = getVal('riskFreeRate') / 100;
                 const beta = getVal('beta');
                 const equityRiskPremium = getVal('equityRiskPremium') / 100;
@@ -215,6 +249,8 @@
 
                 const marketCap = currentPrice * sharesOutstanding;
                 const enterpriseValue = marketCap + debt - cash;
+                
+                const calculatedWaccEl = document.getElementById('calculated-wacc');
 
                 if (enterpriseValue <= 0) {
                     calculatedWaccEl.textContent = '--.--';
@@ -235,6 +271,12 @@
                     calculatedWaccEl.textContent = (wacc * 100).toFixed(2);
                 }
             }
+            
+            function addWaccListeners() {
+                 document.querySelectorAll('.wacc-input').forEach(input => {
+                    input.addEventListener('input', calculateWACC);
+                });
+            }
 
             async function fetchStockData() {
                 const ticker = document.getElementById('ticker').value.trim().toUpperCase();
@@ -242,7 +284,7 @@
                     showModal('Error', 'Please enter a stock ticker.');
                     return;
                 }
-                if (apiKey === 'V93E6F7M68NMFR1Y') {
+                if (apiKey === 'YOUR_API_KEY_HERE') {
                     showModal('API Key Required', 'Please add your free Alpha Vantage API key to the script file. See the README tab for instructions.');
                     return;
                 }
@@ -273,22 +315,24 @@
                         throw new Error(`Could not find data for ticker "${ticker}". Please check the symbol.`);
                     }
 
-                    // Populate form fields (converting to millions)
+                    // Populate read-only dashboard fields (converting to millions)
                     const toMillions = (val) => val ? (parseFloat(val) / 1000000).toFixed(0) : 0;
                     
+                    companyNameDisplay.textContent = `${overviewData.Name} (${overviewData.Symbol})`;
                     document.getElementById('currentPrice').value = parseFloat(quoteData['Global Quote']['05. price']).toFixed(2);
                     document.getElementById('sharesOutstanding').value = toMillions(overviewData.SharesOutstanding);
                     document.getElementById('revenue').value = toMillions(overviewData.RevenueTTM);
                     document.getElementById('cash').value = toMillions(overviewData.CashAndShortTermInvestments);
                     document.getElementById('debt').value = toMillions(overviewData.LongTermDebt + overviewData.ShortTermDebt);
                     
-                    // Populate WACC fields
+                    // Populate WACC assumption fields
                     document.getElementById('beta').value = parseFloat(overviewData.Beta).toFixed(2);
                     if (treasuryData.data && treasuryData.data.length > 0) {
                         document.getElementById('riskFreeRate').value = parseFloat(treasuryData.data[0].value).toFixed(2);
                     }
                     
-                    showModal('Success', `Successfully fetched data for ${overviewData.Name} (${overviewData.Symbol}).`);
+                    switchTab('dashboard'); // Switch to dashboard after successful fetch
+                    calculateWACC(); // Calculate WACC with new data
 
                 } catch (error) {
                     showModal('Error Fetching Data', error.message);
@@ -296,7 +340,6 @@
                     fetchBtnText.classList.remove('hidden');
                     fetchLoader.classList.add('hidden');
                     fetchDataBtn.disabled = false;
-                    calculateWACC(); // Recalculate WACC with new data
                 }
             }
 
@@ -304,22 +347,19 @@
                 tab.btn.addEventListener('click', () => switchTab(tab.id));
             });
             
-            waccInputs.forEach(input => {
-                input.addEventListener('input', calculateWACC);
-            });
-
             calculateBtn.addEventListener('click', () => {
                 // Placeholder for main calculation logic
                 console.log("Main calculation logic will be added here.");
-                // Switch to the dashboard tab
-                switchTab('dashboard');
+                // This is where we will display the results on the dashboard
             });
-
+            
+            waccInfoBtn.addEventListener('click', showWaccCalculationInfo);
             fetchDataBtn.addEventListener('click', fetchStockData);
             closeModalBtn.addEventListener('click', hideModal);
 
-            // Set initial tab and calculate initial WACC
+            // Initial setup
             switchTab('readme');
+            addWaccListeners();
             calculateWACC();
         });
     </script>
