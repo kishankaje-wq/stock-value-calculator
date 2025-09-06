@@ -85,13 +85,46 @@
 
             <!-- Data Entry Content -->
             <div id="tab-content-data" class="tab-content">
-                <!-- Content will be added in subsequent steps -->
-                 <p>Data Entry form will be built here.</p>
+                <form id="calc-form" class="space-y-8">
+                    <!-- Section 1: Company & Financial Data -->
+                    <div>
+                        <h2 class="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Company & Financial Data</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="input-group"><label for="ticker" class="font-medium">Stock Ticker</label><input type="text" id="ticker" class="input-field" placeholder="e.g., AAPL"></div>
+                            <div class="input-group"><label for="currentPrice" class="font-medium">Current Stock Price ($)</label><input type="number" id="currentPrice" class="input-field" placeholder="150.00" step="0.01"></div>
+                            <div class="input-group"><label for="sharesOutstanding" class="font-medium">Shares Outstanding (M)</label><input type="number" id="sharesOutstanding" class="input-field" placeholder="16000"></div>
+                            <div class="input-group"><label for="revenue" class="font-medium">Revenue (TTM, M)</label><input type="number" id="revenue" class="input-field" placeholder="380000"></div>
+                            <div class="input-group"><label for="cash" class="font-medium">Cash & Equivalents (M)</label><input type="number" id="cash" class="input-field" placeholder="60000"></div>
+                            <div class="input-group"><label for="debt" class="font-medium">Total Debt (M)</label><input type="number" id="debt" class="input-field" placeholder="120000"></div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: DFCF Model Assumptions -->
+                    <div>
+                        <h2 class="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">DFCF Model Assumptions (% of Revenue, unless specified)</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="input-group"><label for="revGrowth1_5" class="font-medium">Revenue Growth Yrs 1-5 (%)</label><input type="number" id="revGrowth1_5" class="input-field" placeholder="12"></div>
+                            <div class="input-group"><label for="revGrowth6_10" class="font-medium">Revenue Growth Yrs 6-10 (%)</label><input type="number" id="revGrowth6_10" class="input-field" placeholder="8"></div>
+                            <div class="input-group"><label for="operatingMargin" class="font-medium">Operating Margin (%)</label><input type="number" id="operatingMargin" class="input-field" placeholder="25"></div>
+                            <div class="input-group"><label for="taxRate" class="font-medium">Tax Rate (%)</label><input type="number" id="taxRate" class="input-field" placeholder="21"></div>
+                            <div class="input-group"><label for="capex" class="font-medium">CapEx as % of Revenue</label><input type="number" id="capex" class="input-field" placeholder="5"></div>
+                            <div class="input-group"><label for="d_a" class="font-medium">D&A as % of Revenue</label><input type="number" id="d_a" class="input-field" placeholder="4"></div>
+                            <div class="input-group"><label for="nwc" class="font-medium">Change in NWC as % of Revenue</label><input type="number" id="nwc" class="input-field" placeholder="3"></div>
+                            <div class="input-group"><label for="discountRate" class="font-medium">Discount Rate (WACC, %)</label><input type="number" id="discountRate" class="input-field" placeholder="10"></div>
+                            <div class="input-group"><label for="terminalRate" class="font-medium">Perpetual Growth Rate (%)</label><input type="number" id="terminalRate" class="input-field" placeholder="3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Action Buttons -->
+                    <div class="flex justify-end gap-4 pt-4 mt-4 border-t border-gray-700">
+                        <button type="reset" class="btn btn-secondary">Clear Form</button>
+                        <button type="button" id="calculate-btn" class="btn btn-primary">Calculate & View Dashboard</button>
+                    </div>
+                </form>
             </div>
 
             <!-- Dashboard Content -->
             <div id="tab-content-dashboard" class="tab-content">
-                 <!-- Content will be added in subsequent steps -->
                  <p>Results dashboard will be built here.</p>
             </div>
         </div>
@@ -100,25 +133,37 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const tabs = [
-                { btn: document.getElementById('tab-btn-readme'), content: document.getElementById('tab-content-readme') },
-                { btn: document.getElementById('tab-btn-data'), content: document.getElementById('tab-content-data') },
-                { btn: document.getElementById('tab-btn-dashboard'), content: document.getElementById('tab-content-dashboard') }
+                { id: 'readme', btn: document.getElementById('tab-btn-readme'), content: document.getElementById('tab-content-readme') },
+                { id: 'data', btn: document.getElementById('tab-btn-data'), content: document.getElementById('tab-content-data') },
+                { id: 'dashboard', btn: document.getElementById('tab-btn-dashboard'), content: document.getElementById('tab-content-dashboard') }
             ];
+            
+            const calculateBtn = document.getElementById('calculate-btn');
 
-            function switchTab(activeIndex) {
+            function switchTab(targetId) {
+                let targetIndex = tabs.findIndex(tab => tab.id === targetId);
+                if (targetIndex === -1) targetIndex = 0;
+
                 tabs.forEach((tab, index) => {
-                    const isActive = index === activeIndex;
+                    const isActive = index === targetIndex;
                     tab.btn.classList.toggle('active', isActive);
                     tab.content.classList.toggle('active', isActive);
                 });
             }
 
-            tabs.forEach((tab, index) => {
-                tab.btn.addEventListener('click', () => switchTab(index));
+            tabs.forEach(tab => {
+                tab.btn.addEventListener('click', () => switchTab(tab.id));
+            });
+
+            calculateBtn.addEventListener('click', () => {
+                // Placeholder for calculation logic
+                console.log("Calculation logic will be added here.");
+                // Switch to the dashboard tab
+                switchTab('dashboard');
             });
 
             // Set initial tab
-            switchTab(0);
+            switchTab('readme');
         });
     </script>
 </body>
