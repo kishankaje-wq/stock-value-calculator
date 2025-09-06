@@ -12,7 +12,7 @@
         .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
         .input-field { background-color: #374151; color: #d1d5db; border: 1px solid #4b5563; border-radius: 0.5rem; padding: 0.75rem 1rem; width: 100%; transition: border-color 0.2s, box-shadow 0.2s; }
         .input-field:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); }
-        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s, transform 0.1s; text-align: center; }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s, transform 0.1s; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
         .btn:active { transform: scale(0.98); }
         .btn-primary { background-color: #3b82f6; color: white; }
         .btn-primary:hover { background-color: #2563eb; }
@@ -22,9 +22,6 @@
         .tab-btn.active { border-color: #3b82f6; color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .buy { color: #4ade80; background-color: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80 }
-        .sell { color: #f87171; background-color: rgba(248, 113, 113, 0.1); border: 1px solid #f87171 }
-        .hold { color: #facc15; background-color: rgba(250, 204, 21, 0.1); border: 1px solid #facc15 }
         .prose { color: #d1d5db; }
         .prose h2 { font-size: 1.5rem; font-weight: 600; color: #fff; border-bottom: 1px solid #4b5563; padding-bottom: 0.5rem; margin-bottom: 1rem; }
         .prose h3 { font-size: 1.25rem; font-weight: 600; color: #fff; margin-top: 1.5rem; margin-bottom: 0.5rem; }
@@ -32,6 +29,16 @@
         .prose ul { list-style-type: disc; padding-left: 1.5rem; }
         .prose li { margin-bottom: 0.5rem; }
         .prose code { background-color: #374151; color: #e5e7eb; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.9em; }
+        .calculated-value { background-color: #111827; padding: 0.75rem 1rem; border-radius: 0.5rem; text-align: center; font-weight: 600; font-size: 1.1rem; border: 1px dashed #4b5563;}
+        .calculated-value span { color: #3b82f6; }
+        .info-note { font-size: 0.875rem; color: #9ca3af; margin-top: -0.5rem; margin-bottom: 1rem; }
+        .info-note a { color: #60a5fa; text-decoration: underline; }
+        .info-note a:hover { color: #3b82f6; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 50; visibility: hidden; opacity: 0; transition: visibility 0s 0.3s, opacity 0.3s; }
+        .modal-overlay.visible { visibility: visible; opacity: 1; transition: visibility 0s, opacity 0.3s; }
+        .modal-content { background-color: #1f2937; padding: 2rem; border-radius: 0.75rem; max-width: 500px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+        .loader { width: 1rem; height: 1rem; border: 2px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: inline-block; box-sizing: border-box; animation: rotation 1s linear infinite; }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 min-h-screen p-4">
@@ -53,6 +60,7 @@
         <div class="card">
             <!-- README Content -->
             <div id="tab-content-readme" class="tab-content active prose">
+                <!-- README content from previous step remains unchanged -->
                 <h2>Welcome to the Stock Intrinsic Value Calculator</h2>
                 <p>
                     This tool is designed to provide an estimate of a company's intrinsic value based on a 10-Year Discounted Free Cash Flow (DFCF) model. It is a web-based replica of the core functionality found in the "KK Prototype Moneycessity" spreadsheet.
@@ -72,7 +80,7 @@
                 <h3>How to Use This Calculator</h3>
                 <ol class="list-decimal pl-6 space-y-2">
                     <li><strong>Navigate to the "Data Entry" Tab:</strong> All inputs required for the calculation are located on this page.</li>
-                    <li><strong>Enter Company Financials:</strong> Fill in the fields for the company's stock ticker, current price, shares outstanding, latest free cash flow, cash, and total debt. All monetary values should be entered in millions.</li>
+                    <li><strong>Fetch or Enter Company Financials:</strong> Enter a stock ticker and click "Fetch Data" to populate key fields with sample data. You can then adjust these numbers manually.</li>
                     <li><strong>Provide Your Assumptions:</strong> Input your estimates for the company's growth over the next 1-5 years and 6-10 years. You must also provide a terminal growth rate (the perpetual rate you expect the company to grow at after 10 years) and a discount rate.</li>
                     <li><strong>Calculate & View Results:</strong> Once all fields are filled, click the "Calculate & View Dashboard" button. You will automatically be taken to the "Dashboard" tab to see the detailed results.</li>
                 </ol>
@@ -88,14 +96,24 @@
                 <form id="calc-form" class="space-y-8">
                     <!-- Section 1: Company & Financial Data -->
                     <div>
-                        <h2 class="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Company & Financial Data</h2>
+                        <h2 class="text-xl font-semibold text-white mb-2 border-b border-gray-700 pb-2">Company & Financial Data</h2>
+                        <p class="info-note">You can find this data on most financial websites (e.g., Yahoo Finance, Google Finance, or <a href="https://alphaspread.com/" target="_blank" rel="noopener noreferrer">alphaspread.com</a>).</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div class="input-group"><label for="ticker" class="font-medium">Stock Ticker</label><input type="text" id="ticker" class="input-field" placeholder="e.g., AAPL"></div>
-                            <div class="input-group"><label for="currentPrice" class="font-medium">Current Stock Price ($)</label><input type="number" id="currentPrice" class="input-field" placeholder="150.00" step="0.01"></div>
-                            <div class="input-group"><label for="sharesOutstanding" class="font-medium">Shares Outstanding (M)</label><input type="number" id="sharesOutstanding" class="input-field" placeholder="16000"></div>
-                            <div class="input-group"><label for="revenue" class="font-medium">Revenue (TTM, M)</label><input type="number" id="revenue" class="input-field" placeholder="380000"></div>
-                            <div class="input-group"><label for="cash" class="font-medium">Cash & Equivalents (M)</label><input type="number" id="cash" class="input-field" placeholder="60000"></div>
-                            <div class="input-group"><label for="debt" class="font-medium">Total Debt (M)</label><input type="number" id="debt" class="input-field" placeholder="120000"></div>
+                            <div class="input-group md:col-span-2">
+                                <label for="ticker" class="font-medium">Stock Ticker</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="ticker" class="input-field" placeholder="Enter Ticker (e.g., AAPL) and Fetch">
+                                    <button type="button" id="fetch-data-btn" class="btn btn-secondary w-40">
+                                        <span id="fetch-btn-text">Fetch Data</span>
+                                        <div id="fetch-loader" class="loader hidden"></div>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="input-group"><label for="currentPrice" class="font-medium">Current Stock Price ($)</label><input type="number" id="currentPrice" class="input-field wacc-input" placeholder="0.00" step="0.01"></div>
+                            <div class="input-group"><label for="sharesOutstanding" class="font-medium">Shares Outstanding (M)</label><input type="number" id="sharesOutstanding" class="input-field wacc-input" placeholder="0"></div>
+                            <div class="input-group"><label for="revenue" class="font-medium">Revenue (TTM, M)</label><input type="number" id="revenue" class="input-field" placeholder="0"></div>
+                            <div class="input-group"><label for="cash" class="font-medium">Cash & Equivalents (M)</label><input type="number" id="cash" class="input-field wacc-input" placeholder="0"></div>
+                            <div class="input-group"><label for="debt" class="font-medium">Total Debt (M)</label><input type="number" id="debt" class="input-field wacc-input" placeholder="0"></div>
                         </div>
                     </div>
 
@@ -106,16 +124,30 @@
                             <div class="input-group"><label for="revGrowth1_5" class="font-medium">Revenue Growth Yrs 1-5 (%)</label><input type="number" id="revGrowth1_5" class="input-field" placeholder="12"></div>
                             <div class="input-group"><label for="revGrowth6_10" class="font-medium">Revenue Growth Yrs 6-10 (%)</label><input type="number" id="revGrowth6_10" class="input-field" placeholder="8"></div>
                             <div class="input-group"><label for="operatingMargin" class="font-medium">Operating Margin (%)</label><input type="number" id="operatingMargin" class="input-field" placeholder="25"></div>
-                            <div class="input-group"><label for="taxRate" class="font-medium">Tax Rate (%)</label><input type="number" id="taxRate" class="input-field" placeholder="21"></div>
+                            <div class="input-group"><label for="taxRate" class="font-medium">Tax Rate (%)</label><input type="number" id="taxRate" class="input-field wacc-input" placeholder="21"></div>
                             <div class="input-group"><label for="capex" class="font-medium">CapEx as % of Revenue</label><input type="number" id="capex" class="input-field" placeholder="5"></div>
                             <div class="input-group"><label for="d_a" class="font-medium">D&A as % of Revenue</label><input type="number" id="d_a" class="input-field" placeholder="4"></div>
                             <div class="input-group"><label for="nwc" class="font-medium">Change in NWC as % of Revenue</label><input type="number" id="nwc" class="input-field" placeholder="3"></div>
-                            <div class="input-group"><label for="discountRate" class="font-medium">Discount Rate (WACC, %)</label><input type="number" id="discountRate" class="input-field" placeholder="10"></div>
                             <div class="input-group"><label for="terminalRate" class="font-medium">Perpetual Growth Rate (%)</label><input type="number" id="terminalRate" class="input-field" placeholder="3"></div>
                         </div>
                     </div>
 
-                    <!-- Section 3: Action Buttons -->
+                    <!-- Section 3: WACC Calculation -->
+                    <div>
+                        <h2 class="text-xl font-semibold text-white mb-2 border-b border-gray-700 pb-2">Discount Rate (WACC) Calculation</h2>
+                        <p class="info-note">These values can be found under company statistics on sites like <a href="https://alphaspread.com/" target="_blank" rel="noopener noreferrer">alphaspread.com</a>. Risk-Free Rate is often the 10-Year Treasury Yield.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                             <div class="input-group"><label for="riskFreeRate" class="font-medium">Risk-Free Rate (%)</label><input type="number" id="riskFreeRate" class="input-field wacc-input" placeholder="4.5" step="0.01"></div>
+                             <div class="input-group"><label for="beta" class="font-medium">Beta</label><input type="number" id="beta" class="input-field wacc-input" placeholder="1.2" step="0.01"></div>
+                             <div class="input-group"><label for="equityRiskPremium" class="font-medium">Equity Risk Premium (%)</label><input type="number" id="equityRiskPremium" class="input-field wacc-input" placeholder="5.5" step="0.01"></div>
+                             <div class="input-group"><label for="costOfDebt" class="font-medium">Pre-Tax Cost of Debt (%)</label><input type="number" id="costOfDebt" class="input-field wacc-input" placeholder="5.0" step="0.01"></div>
+                        </div>
+                        <div class="mt-6 calculated-value">
+                            Calculated Discount Rate (WACC): <span id="calculated-wacc">--.--</span>%
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Action Buttons -->
                     <div class="flex justify-end gap-4 pt-4 mt-4 border-t border-gray-700">
                         <button type="reset" class="btn btn-secondary">Clear Form</button>
                         <button type="button" id="calculate-btn" class="btn btn-primary">Calculate & View Dashboard</button>
@@ -130,6 +162,19 @@
         </div>
     </main>
 
+    <!-- Modal -->
+    <div id="info-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-lg font-bold text-white mb-4">A Note on Automatic Data Fetching</h3>
+            <p class="text-gray-400 mb-6">
+                For security reasons, web browsers prevent this page from directly pulling live data from other websites like stockanalysis.com (this is a standard web feature called CORS policy).
+                <br><br>
+                To demonstrate how this would work, we've populated the form with sample data for <strong>Apple Inc. (AAPL)</strong>. Please review and adjust these numbers as needed for your own analysis.
+            </p>
+            <button id="close-modal-btn" class="btn btn-primary w-full">Understood</button>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const tabs = [
@@ -139,6 +184,15 @@
             ];
             
             const calculateBtn = document.getElementById('calculate-btn');
+            const fetchDataBtn = document.getElementById('fetch-data-btn');
+            const fetchBtnText = document.getElementById('fetch-btn-text');
+            const fetchLoader = document.getElementById('fetch-loader');
+            
+            const modal = document.getElementById('info-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            const waccInputs = document.querySelectorAll('.wacc-input');
+            const calculatedWaccEl = document.getElementById('calculated-wacc');
 
             function switchTab(targetId) {
                 let targetIndex = tabs.findIndex(tab => tab.id === targetId);
@@ -150,20 +204,99 @@
                     tab.content.classList.toggle('active', isActive);
                 });
             }
+            
+            function showModal() { modal.classList.add('visible'); }
+            function hideModal() { modal.classList.remove('visible'); }
+
+            function calculateWACC() {
+                const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
+
+                const currentPrice = getVal('currentPrice');
+                const sharesOutstanding = getVal('sharesOutstanding');
+                const cash = getVal('cash');
+                const debt = getVal('debt');
+                const taxRate = getVal('taxRate') / 100;
+                
+                const riskFreeRate = getVal('riskFreeRate') / 100;
+                const beta = getVal('beta');
+                const equityRiskPremium = getVal('equityRiskPremium') / 100;
+                const costOfDebt = getVal('costOfDebt') / 100;
+
+                const marketCap = currentPrice * sharesOutstanding;
+                const enterpriseValue = marketCap + debt - cash;
+
+                if (enterpriseValue <= 0) {
+                    calculatedWaccEl.textContent = '--.--';
+                    return;
+                }
+
+                const weightOfEquity = marketCap / enterpriseValue;
+                const weightOfDebt = debt / enterpriseValue;
+
+                const costOfEquity = riskFreeRate + beta * equityRiskPremium;
+                const afterTaxCostOfDebt = costOfDebt * (1 - taxRate);
+
+                const wacc = (weightOfEquity * costOfEquity) + (weightOfDebt * afterTaxCostOfDebt);
+                
+                if (isNaN(wacc) || !isFinite(wacc)) {
+                    calculatedWaccEl.textContent = '--.--';
+                } else {
+                    calculatedWaccEl.textContent = (wacc * 100).toFixed(2);
+                }
+            }
+
+            async function fetchStockData() {
+                fetchBtnText.classList.add('hidden');
+                fetchLoader.classList.remove('hidden');
+                fetchDataBtn.disabled = true;
+
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // In a real app, an API call would be made here.
+                // Due to browser CORS security policy, we cannot fetch directly from stockanalysis.com.
+                // So, we will show a modal and populate with sample data for AAPL.
+                
+                showModal();
+                
+                // Populate form with Apple Inc. (AAPL) sample data (approx. values)
+                document.getElementById('ticker').value = 'AAPL';
+                document.getElementById('currentPrice').value = '172.00';
+                document.getElementById('sharesOutstanding').value = '15728';
+                document.getElementById('revenue').value = '383285';
+                document.getElementById('cash').value = '62480';
+                document.getElementById('debt').value = '111088';
+                document.getElementById('beta').value = '1.29';
+                
+                fetchBtnText.classList.remove('hidden');
+                fetchLoader.classList.add('hidden');
+                fetchDataBtn.disabled = false;
+                
+                // Recalculate WACC with new data
+                calculateWACC();
+            }
 
             tabs.forEach(tab => {
                 tab.btn.addEventListener('click', () => switchTab(tab.id));
             });
+            
+            waccInputs.forEach(input => {
+                input.addEventListener('input', calculateWACC);
+            });
 
             calculateBtn.addEventListener('click', () => {
-                // Placeholder for calculation logic
-                console.log("Calculation logic will be added here.");
+                // Placeholder for main calculation logic
+                console.log("Main calculation logic will be added here.");
                 // Switch to the dashboard tab
                 switchTab('dashboard');
             });
 
-            // Set initial tab
+            fetchDataBtn.addEventListener('click', fetchStockData);
+            closeModalBtn.addEventListener('click', hideModal);
+
+            // Set initial tab and calculate initial WACC
             switchTab('readme');
+            calculateWACC();
         });
     </script>
 </body>
