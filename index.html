@@ -1,501 +1,499 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Analysis & Valuation Tool</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .tab-btn.active {
-            border-color: #3b82f6;
-            background-color: #1d4ed8;
-            color: #ffffff;
-        }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3b82f6;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem;
-        }
-        .data-table th, .data-table td {
-            border: 1px solid #374151;
-            padding: 0.75rem;
-            text-align: right;
-        }
-        .data-table th {
-            background-color: #1f2937;
-            font-weight: 600;
-        }
-        .data-table td:first-child {
-            text-align: left;
-            font-weight: 500;
-        }
-        .data-table tbody tr:nth-child(odd) {
-            background-color: #111827;
-        }
-        .data-table tbody tr:hover {
-            background-color: #1f2937;
-        }
-        .summary-card {
-            background-color: #111827;
-            border-left: 4px solid #3b82f6;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis & Valuation Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-btn.active {
+            border-color: #3b82f6;
+            background-color: #1d4ed8;
+            color: #ffffff;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #374151;
+            padding: 0.75rem;
+            text-align: right;
+        }
+        .data-table th {
+            background-color: #1f2937;
+            font-weight: 600;
+        }
+        .data-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+        .data-table tbody tr:nth-child(odd) {
+            background-color: #111827;
+        }
+        .data-table tbody tr:hover {
+            background-color: #1f2937;
+        }
+        .summary-card {
+            background-color: #111827;
+            border-left: 4px solid #3b82f6;
+        }
+    </style>
 </head>
 <body class="bg-gray-900 text-gray-200 min-h-screen p-4 sm:p-6">
 
-    <main class="w-full max-w-7xl mx-auto space-y-6">
-        <header class="text-center">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white">Stock Intrinsic Value Analyzer</h1>
-            <p class="text-md sm:text-lg text-gray-400 mt-2">A DCF-based tool for comprehensive stock analysis.</p>
-        </header>
+    <main class="w-full max-w-7xl mx-auto space-y-6">
+        <header class="text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white">Stock Intrinsic Value Analyzer</h1>
+            <p class="text-md sm:text-lg text-gray-400 mt-2">A DCF-based tool for comprehensive stock analysis.</p>
+        </header>
 
-        <!-- Tabs -->
-        <div class="flex flex-wrap justify-center items-center gap-2 sm:gap-4 bg-gray-800 p-2 rounded-lg">
-            <button data-tab="dashboard" class="tab-btn active px-4 py-2 rounded-md font-semibold border-2 border-transparent transition-all">Dashboard & Valuation</button>
-            <button data-tab="dcf" class="tab-btn px-4 py-2 rounded-md font-semibold border-2 border-transparent transition-all">DCF Breakdown</button>
-            <button data-tab="buffett" class="tab-btn px-4 py-2 rounded-md font-semibold border-2 border-transparent transition-all">Buffett Supplement</button>
-            <button data-tab="readme" class="tab-btn px-4 py-2 rounded-md font-semibold border-2 border-transparent transition-all">Read Me</button>
-        </div>
+        <!-- Tabs -->
+        <div class="flex flex-wrap justify-center items-center gap-2 sm:gap-4 bg-gray-800 p-2 rounded-lg">
+            <button data-tab="dashboard" class="tab-btn active px-4 py-2 rounded-md font-semibold border-2 border-transparent transition-all">Dashboard & Valuation</button>
+            <button data-tab="dcf" class="tab-btn px-4 py-2 rounded-md font-semibold border-2 border-transparent transition-all">DCF Breakdown</button>
+            <button data-tab="buffett" class="tab-btn px-4 py-2 rounded-md font-semibold border-2 border-transparent transition-all">Buffett Supplement</button>
+            <button data-tab="readme" class="tab-btn px-4 py-2 rounded-md font-semibold border-2 border-transparent transition-all">Read Me</button>
+        </div>
 
-        <!-- Tab Content -->
-        <div class="bg-gray-800 rounded-lg p-6 min-h-[60vh]">
-            <!-- Dashboard & Valuation -->
-            <div id="dashboard" class="tab-content active space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-gray-900 p-4 rounded-lg">
-                    <div class="md:col-span-1">
-                        <label for="ticker" class="block text-sm font-medium text-gray-400 mb-1">Stock Ticker</label>
-                        <input type="text" id="ticker" class="bg-gray-700 text-white border border-gray-600 rounded-md w-full px-3 py-2 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., MSFT">
-                    </div>
-                    <div class="md:col-span-1 flex items-end h-full">
-                         <button id="fetch-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md w-full flex items-center justify-center gap-2">
-                            <span id="fetch-btn-text">Fetch & Analyze</span>
-                            <div id="fetch-loader" class="loader hidden"></div>
-                        </button>
-                    </div>
-                    <div id="status-area" class="md:col-span-1 text-sm text-gray-400 h-full flex items-center justify-center">Enter a ticker to begin.</div>
-                </div>
+        <!-- Tab Content -->
+        <div class="bg-gray-800 rounded-lg p-6 min-h-[60vh]">
+            <!-- Dashboard & Valuation -->
+            <div id="dashboard" class="tab-content active space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-gray-900 p-4 rounded-lg">
+                    <div class="md:col-span-1">
+                        <label for="ticker" class="block text-sm font-medium text-gray-400 mb-1">Stock Ticker</label>
+                        <input type="text" id="ticker" class="bg-gray-700 text-white border border-gray-600 rounded-md w-full px-3 py-2 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., MSFT">
+                    </div>
+                    <div class="md:col-span-1 flex items-end h-full">
+                         <button id="fetch-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md w-full flex items-center justify-center gap-2">
+                            <span id="fetch-btn-text">Fetch & Analyze</span>
+                            <div id="fetch-loader" class="loader hidden"></div>
+                        </button>
+                    </div>
+                    <div id="status-area" class="md:col-span-1 text-sm text-gray-400 h-full flex items-center justify-center">Enter a ticker to begin.</div>
+                </div>
 
-                <div id="analysis-section" class="hidden space-y-8">
-                    <!-- Assumptions & Overrides -->
-                    <div>
-                        <h2 class="text-xl font-semibold border-b border-gray-700 pb-2 mb-4">Assumptions & Overrides</h2>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                            <!-- Key Metrics -->
-                            <div class="input-group"><label for="shares" class="font-medium text-sm">Shares Outstanding (M)</label><input type="number" id="shares" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
-                            <div class="input-group"><label for="cash" class="font-medium text-sm">Cash & Equivalents (M)</label><input type="number" id="cash" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
-                            <div class="input-group"><label for="debt" class="font-medium text-sm">Total Debt (M)</label><input type="number" id="debt" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
-                            <!-- Valuation Assumptions -->
-                            <div class="input-group"><label for="discountRate" class="font-medium text-sm">Discount Rate (%)</label><input type="number" id="discountRate" value="9.0" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
-                            <div class="input-group"><label for="growthRate" class="font-medium text-sm">Perpetual Growth Rate (%)</label><input type="number" id="growthRate" value="2.5" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
-                            <div class="input-group"><label for="fcfMargin" class="font-medium text-sm">Free Cash Flow Margin (%)</label><input type="number" id="fcfMargin" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
-                        </div>
-                    </div>
-                     <!-- Calculation & Results -->
-                    <div class="flex flex-col items-center justify-center gap-6 pt-6 border-t border-gray-700">
-                        <button id="calculate-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-md text-lg">Calculate Intrinsic Value</button>
-                        <div id="result-area" class="text-center hidden mt-4">
-                            <h3 class="text-lg text-gray-400">Calculated Intrinsic Value per Share</h3>
-                            <p id="intrinsic-value" class="text-5xl font-bold text-green-400 mt-2">$0.00</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <div id="analysis-section" class="hidden space-y-8">
+                    <!-- Assumptions & Overrides -->
+                    <div>
+                        <h2 class="text-xl font-semibold border-b border-gray-700 pb-2 mb-4">Assumptions & Overrides</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                            <!-- Key Metrics -->
+                            <div class="input-group"><label for="shares" class="font-medium text-sm">Shares Outstanding (M)</label><input type="number" id="shares" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
+                            <div class="input-group"><label for="cash" class="font-medium text-sm">Cash & Equivalents (M)</label><input type="number" id="cash" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
+                            <div class="input-group"><label for="debt" class="font-medium text-sm">Total Debt (M)</label><input type="number" id="debt" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
+                            <!-- Valuation Assumptions -->
+                            <div class="input-group"><label for="discountRate" class="font-medium text-sm">Discount Rate (%)</label><input type="number" id="discountRate" value="9.0" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
+                            <div class="input-group"><label for="growthRate" class="font-medium text-sm">Perpetual Growth Rate (%)</label><input type="number" id="growthRate" value="2.5" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
+                            <div class="input-group"><label for="fcfMargin" class="font-medium text-sm">Free Cash Flow Margin (%)</label><input type="number" id="fcfMargin" class="bg-gray-700 p-2 rounded-md border border-gray-600"></div>
+                        </div>
+                    </div>
+                     <!-- Calculation & Results -->
+                    <div class="flex flex-col items-center justify-center gap-6 pt-6 border-t border-gray-700">
+                        <button id="calculate-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-md text-lg">Calculate Intrinsic Value</button>
+                        <div id="result-area" class="text-center hidden mt-4">
+                            <h3 class="text-lg text-gray-400">Calculated Intrinsic Value per Share</h3>
+                            <p id="intrinsic-value" class="text-5xl font-bold text-green-400 mt-2">$0.00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- DCF Breakdown -->
-            <div id="dcf" class="tab-content space-y-6">
-                <h2 class="text-2xl font-semibold">DCF Breakdown</h2>
-                <div id="dcf-content" class="text-gray-400">Run a calculation on the dashboard to see the detailed breakdown.</div>
-            </div>
+            <!-- DCF Breakdown -->
+            <div id="dcf" class="tab-content space-y-6">
+                <h2 class="text-2xl font-semibold">DCF Breakdown</h2>
+                <div id="dcf-content" class="text-gray-400">Run a calculation on the dashboard to see the detailed breakdown.</div>
+            </div>
 
-            <!-- Buffett Supplement -->
-            <div id="buffett" class="tab-content space-y-6">
-                 <h2 class="text-2xl font-semibold">Buffett Supplement: Historical Data</h2>
-                 <div id="buffett-content" class="text-gray-400">Fetch data for a ticker to verify its historical performance.</div>
-            </div>
+            <!-- Buffett Supplement -->
+            <div id="buffett" class="tab-content space-y-6">
+                 <h2 class="text-2xl font-semibold">Buffett Supplement: Historical Data</h2>
+                 <div id="buffett-content" class="text-gray-400">Fetch data for a ticker to verify its historical performance.</div>
+            </div>
 
-            <!-- Read Me -->
-            <div id="readme" class="tab-content prose prose-invert max-w-none">
-                <h2>How to Use This Tool</h2>
-                <ol>
-                    <li>
-                        <strong>Fetch Data:</strong> Go to the "Dashboard & Valuation" tab, enter a valid stock ticker (e.g., MSFT, AAPL), and click "Fetch & Analyze." The tool will scrape the necessary financial data.
-                    </li>
-                    <li>
-                        <strong>Verify Data:</strong> Click on the "Buffett Supplement" tab. Review the tables to ensure the historical data for the company was pulled correctly and looks reasonable. This is your quality check.
-                    </li>
-                    <li>
-                        <strong>Adjust Assumptions:</strong> Return to the "Dashboard" tab. The form will be populated with the latest data. You can now override any numbers or adjust the key valuation assumptions to fit your own analysis.
-                    </li>
-                    <li>
-                        <strong>Calculate & Analyze:</strong> Click "Calculate Intrinsic Value." The final result will appear on the dashboard. For a detailed view of the calculations, switch to the "DCF Breakdown" tab.
-                    </li>
-                </ol>
+            <!-- Read Me -->
+            <div id="readme" class="tab-content prose prose-invert max-w-none">
+                <h2>How to Use This Tool</h2>
+                <ol>
+                    <li>
+                        <strong>Fetch Data:</strong> Go to the "Dashboard & Valuation" tab, enter a valid stock ticker (e.g., MSFT, AAPL), and click "Fetch & Analyze." The tool will scrape the necessary financial data.
+                    </li>
+                    <li>
+                        <strong>Verify Data:</strong> Click on the "Buffett Supplement" tab. Review the tables to ensure the historical data for the company was pulled correctly and looks reasonable. This is your quality check.
+                    </li>
+                    <li>
+                        <strong>Adjust Assumptions:</strong> Return to the "Dashboard" tab. The form will be populated with the latest data. You can now override any numbers or adjust the key valuation assumptions to fit your own analysis.
+                    </li>
+                    <li>
+                        <strong>Calculate & Analyze:</strong> Click "Calculate Intrinsic Value." The final result will appear on the dashboard. For a detailed view of the calculations, switch to the "DCF Breakdown" tab.
+                    </li>
+                </ol>
 
-                <h2>Field Definitions</h2>
-                <dl class="space-y-4">
-                    <div>
-                        <dt class="font-semibold text-white">Shares Outstanding</dt>
-                        <dd>The total number of a company's shares held by all its shareholders. Used to convert the company's total equity value into a per-share value.</dd>
-                    </div>
-                    <div>
-                        <dt class="font-semibold text-white">Cash & Equivalents</dt>
-                        <dd>The most liquid assets of a company. This is added back to the enterprise value to determine the equity value available to shareholders.</dd>
-                    </div>
-                    <div>
-                        <dt class="font-semibold text-white">Total Debt</dt>
-                        <dd>A company's total short-term and long-term financial obligations. This is subtracted from the enterprise value to determine the equity value.</dd>
-                    </div>
-                    <div>
-                        <dt class="font-semibold text-white">Discount Rate (%)</dt>
-                        <dd>The required rate of return an investor expects for taking on the risk of investing in the company. A higher rate implies more risk and results in a lower intrinsic value. Often represented by the Weighted Average Cost of Capital (WACC).</dd>
-                    </div>
-                    <div>
-                        <dt class="font-semibold text-white">Perpetual Growth Rate (%)</dt>
-                        <dd>The constant rate at which a company's free cash flow is expected to grow forever after the 10-year forecast period. This is typically a low number, similar to long-term economic growth (e.g., 2-3%).</dd>
-                    </div>
-                     <div>
-                        <dt class="font-semibold text-white">Free Cash Flow (FCF) Margin (%)</dt>
-                        <dd>The percentage of revenue a company converts into free cash flow (FCF / Revenue). It's a key indicator of profitability and operational efficiency. A higher, stable margin is desirable.</dd>
-                    </div>
-                </dl>
-            </div>
-        </div>
-    </main>
+                <h2>Field Definitions</h2>
+                <dl class="space-y-4">
+                    <div>
+                        <dt class="font-semibold text-white">Shares Outstanding</dt>
+                        <dd>The total number of a company's shares held by all its shareholders. Used to convert the company's total equity value into a per-share value.</dd>
+                    </div>
+                    <div>
+                        <dt class="font-semibold text-white">Cash & Equivalents</dt>
+                        <dd>The most liquid assets of a company. This is added back to the enterprise value to determine the equity value available to shareholders.</dd>
+                    </div>
+                    <div>
+                        <dt class="font-semibold text-white">Total Debt</dt>
+                        <dd>A company's total short-term and long-term financial obligations. This is subtracted from the enterprise value to determine the equity value.</dd>
+                    </div>
+                    <div>
+                        <dt class="font-semibold text-white">Discount Rate (%)</dt>
+                        <dd>The required rate of return an investor expects for taking on the risk of investing in the company. A higher rate implies more risk and results in a lower intrinsic value. Often represented by the Weighted Average Cost of Capital (WACC).</dd>
+                    </div>
+                    <div>
+                        <dt class="font-semibold text-white">Perpetual Growth Rate (%)</dt>
+                        <dd>The constant rate at which a company's free cash flow is expected to grow forever after the 10-year forecast period. This is typically a low number, similar to long-term economic growth (e.g., 2-3%).</dd>
+                    </div>
+                     <div>
+                        <dt class="font-semibold text-white">Free Cash Flow (FCF) Margin (%)</dt>
+                        <dd>The percentage of revenue a company converts into free cash flow (FCF / Revenue). It's a key indicator of profitability and operational efficiency. A higher, stable margin is desirable.</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </main>
 
-    <script>
-        // --- App State ---
-        let appState = {
-            fetchedData: null,
-            ui: {
-                tabs: [],
-                contents: [],
-                fetchBtn: null,
-                fetchBtnText: null,
-                fetchLoader: null,
-                calculateBtn: null,
-                tickerInput: null,
-                statusArea: null,
-                analysisSection: null,
-                resultArea: null,
-                intrinsicValueEl: null,
-                dcfContent: null,
-                buffettContent: null,
-            }
-        };
+    <script>
+        // --- App State ---
+        let appState = {
+            fetchedData: null,
+            ui: {
+                tabs: [],
+                contents: [],
+                fetchBtn: null,
+                fetchBtnText: null,
+                fetchLoader: null,
+                calculateBtn: null,
+                tickerInput: null,
+                statusArea: null,
+                analysisSection: null,
+                resultArea: null,
+                intrinsicValueEl: null,
+                dcfContent: null,
+                buffettContent: null,
+            }
+        };
 
-        // --- Core Functions ---
-        const main = () => {
-            try {
-                initializeUI();
-                attachEventListeners();
-            } catch (error) {
-                console.error("Fatal error during initialization:", error);
-                if (appState.ui.statusArea) {
-                    setStatus('Critical Error: App could not start. Check console.', true);
-                }
-            }
-        };
+        // --- Core Functions ---
+        const main = () => {
+            try {
+                initializeUI();
+                attachEventListeners();
+            } catch (error) {
+                console.error("Fatal error during initialization:", error);
+                if (appState.ui.statusArea) {
+                    setStatus('Critical Error: App could not start. Check console.', true);
+                }
+            }
+        };
 
-        const initializeUI = () => {
-            const ui = appState.ui;
-            ui.tabs = document.querySelectorAll('.tab-btn');
-            ui.contents = document.querySelectorAll('.tab-content');
-            ui.fetchBtn = document.getElementById('fetch-btn');
-            ui.fetchBtnText = document.getElementById('fetch-btn-text');
-            ui.fetchLoader = document.getElementById('fetch-loader');
-            ui.calculateBtn = document.getElementById('calculate-btn');
-            ui.tickerInput = document.getElementById('ticker');
-            ui.statusArea = document.getElementById('status-area');
-            ui.analysisSection = document.getElementById('analysis-section');
-            ui.resultArea = document.getElementById('result-area');
-            ui.intrinsicValueEl = document.getElementById('intrinsic-value');
-            ui.dcfContent = document.getElementById('dcf-content');
-            ui.buffettContent = document.getElementById('buffett-content');
-        };
+        const initializeUI = () => {
+            const ui = appState.ui;
+            ui.tabs = document.querySelectorAll('.tab-btn');
+            ui.contents = document.querySelectorAll('.tab-content');
+            ui.fetchBtn = document.getElementById('fetch-btn');
+            ui.fetchBtnText = document.getElementById('fetch-btn-text');
+            ui.fetchLoader = document.getElementById('fetch-loader');
+            ui.calculateBtn = document.getElementById('calculate-btn');
+            ui.tickerInput = document.getElementById('ticker');
+            ui.statusArea = document.getElementById('status-area');
+            ui.analysisSection = document.getElementById('analysis-section');
+            ui.resultArea = document.getElementById('result-area');
+            ui.intrinsicValueEl = document.getElementById('intrinsic-value');
+            ui.dcfContent = document.getElementById('dcf-content');
+            ui.buffettContent = document.getElementById('buffett-content');
+        };
 
-        const attachEventListeners = () => {
-            const { ui } = appState;
-            if (ui.tabs) {
-                ui.tabs.forEach(tab => tab.addEventListener('click', handleTabClick));
-            }
-            if (ui.fetchBtn) {
-                ui.fetchBtn.addEventListener('click', handleFetchData);
-            }
-            if (ui.calculateBtn) {
-                ui.calculateBtn.addEventListener('click', handleCalculate);
-            }
-        };
+        const attachEventListeners = () => {
+            const { ui } = appState;
+            if (ui.tabs) {
+                ui.tabs.forEach(tab => tab.addEventListener('click', handleTabClick));
+            }
+            if (ui.fetchBtn) {
+                ui.fetchBtn.addEventListener('click', handleFetchData);
+            }
+            if (ui.calculateBtn) {
+                ui.calculateBtn.addEventListener('click', handleCalculate);
+            }
+        };
 
-        // --- Event Handlers ---
-        const handleTabClick = (event) => {
-            const { ui } = appState;
-            const targetTab = event.currentTarget;
-            ui.tabs.forEach(t => t.classList.remove('active'));
-            targetTab.classList.add('active');
-            const targetContentId = targetTab.getAttribute('data-tab');
-            ui.contents.forEach(content => {
-                content.classList.toggle('active', content.id === targetContentId);
-            });
-        };
+        // --- Event Handlers ---
+        const handleTabClick = (event) => {
+            const { ui } = appState;
+            const targetTab = event.currentTarget;
+            ui.tabs.forEach(t => t.classList.remove('active'));
+            targetTab.classList.add('active');
+            const targetContentId = targetTab.getAttribute('data-tab');
+            ui.contents.forEach(content => {
+                content.classList.toggle('active', content.id === targetContentId);
+            });
+        };
 
-        const handleFetchData = async () => {
-            const ticker = appState.ui.tickerInput.value.trim().toUpperCase();
-            if (!ticker) {
-                setStatus('Please enter a ticker.', true);
-                return;
-            }
+        const handleFetchData = async () => {
+            const ticker = appState.ui.tickerInput.value.trim().toUpperCase();
+            if (!ticker) {
+                setStatus('Please enter a ticker.', true);
+                return;
+            }
 
-            setLoadingState(true);
-            try {
-                const proxy = 'https://corsproxy.io/?';
-                const financialsUrl = `${proxy}https://stockanalysis.com/stocks/${ticker}/financials/?p=quarterly`;
-                const statsUrl = `${proxy}https://stockanalysis.com/stocks/${ticker}/statistics/`;
+            setLoadingState(true);
+            try {
+                const proxy = 'https://corsproxy.io/?';
+                const financialsUrl = `${proxy}https://stockanalysis.com/stocks/${ticker}/financials/?p=quarterly`;
+                const statsUrl = `${proxy}https://stockanalysis.com/stocks/${ticker}/statistics/`;
 
-                const [financialsRes, statsRes] = await Promise.all([fetch(financialsUrl), fetch(statsUrl)]);
-                if (!financialsRes.ok || !statsRes.ok) throw new Error(`Failed to fetch data for ${ticker}. Check the symbol.`);
+                const [financialsRes, statsRes] = await Promise.all([fetch(financialsUrl), fetch(statsUrl)]);
+                if (!financialsRes.ok || !statsRes.ok) throw new Error(`Failed to fetch data for ${ticker}. Check the symbol.`);
 
-                const financialsHtml = await financialsRes.text();
-                const statsHtml = await statsRes.text();
+                const financialsHtml = await financialsRes.text();
+                const statsHtml = await statsRes.text();
 
-                const parser = new DOMParser();
-                const financialsDoc = parser.parseFromString(financialsHtml, 'text/html');
-                const statsDoc = parser.parseFromString(statsHtml, 'text/html');
+                const parser = new DOMParser();
+                const financialsDoc = parser.parseFromString(financialsHtml, 'text/html');
+                const statsDoc = parser.parseFromString(statsHtml, 'text/html');
 
-                appState.fetchedData = parseScrapedData(financialsDoc, statsDoc);
-                
-                populateDashboard(appState.fetchedData.stats);
-                populateBuffettSupplement(appState.fetchedData);
+                appState.fetchedData = parseScrapedData(financialsDoc, statsDoc);
+                
+                populateDashboard(appState.fetchedData.stats);
+                populateBuffettSupplement(appState.fetchedData);
 
-                appState.ui.analysisSection.classList.remove('hidden');
-                setStatus(`Successfully fetched data for ${ticker}.`, false);
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                setStatus(error.message, true);
-            } finally {
-                setLoadingState(false);
-            }
-        };
+                appState.ui.analysisSection.classList.remove('hidden');
+                setStatus(`Successfully fetched data for ${ticker}.`, false);
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                setStatus(error.message, true);
+            } finally {
+                setLoadingState(false);
+            }
+        };
 
-        const handleCalculate = () => {
-            const { ui } = appState;
-            try {
-                if (!appState.fetchedData) {
-                    throw new Error("Please fetch company data before calculating.");
-                }
+        const handleCalculate = () => {
+            const { ui } = appState;
+            try {
+                if (!appState.fetchedData) {
+                    throw new Error("Please fetch company data before calculating.");
+                }
 
-                const inputs = getCalculationInputs();
-                const lastRevenue = parseFinancialValue(appState.fetchedData.financials.metrics['Revenue'][0]);
-                if (lastRevenue === 0) throw new Error("Last reported revenue is zero.");
-                
-                const results = performDcfCalculation(inputs, lastRevenue);
-                
-                populateDcfBreakdown(results);
-                ui.intrinsicValueEl.textContent = formatCurrency(results.intrinsicValuePerShare);
-                ui.resultArea.classList.remove('hidden');
-                setStatus('Calculation complete.', false);
-            } catch (error) {
-                console.error("Calculation Error:", error);
-                setStatus(error.message, true);
-                ui.resultArea.classList.add('hidden');
-            }
-        };
-        
-        // --- Data Parsing & Calculation Logic ---
-        const parseScrapedData = (financialsDoc, statsDoc) => {
-            const findStat = (doc, label) => {
-                 for (const table of doc.querySelectorAll('table')) {
-                     for (const row of table.querySelectorAll('tr')) {
-                         if (row.cells[0] && row.cells[0].textContent.trim().toLowerCase() === label.toLowerCase()) {
-                             return row.cells[1] ? row.cells[1].textContent.trim() : '0';
-                         }
-                     }
-                 }
-                 return '0';
-            };
+                const inputs = getCalculationInputs();
+                const lastRevenue = parseFinancialValue(appState.fetchedData.financials.metrics['Revenue'][0]);
+                if (lastRevenue === 0) throw new Error("Last reported revenue is zero.");
+                
+                const results = performDcfCalculation(inputs, lastRevenue);
+                
+                populateDcfBreakdown(results);
+                ui.intrinsicValueEl.textContent = formatCurrency(results.intrinsicValuePerShare);
+                ui.resultArea.classList.remove('hidden');
+                setStatus('Calculation complete.', false);
+            } catch (error) {
+                console.error("Calculation Error:", error);
+                setStatus(error.message, true);
+                ui.resultArea.classList.add('hidden');
+            }
+        };
+        
+        // --- Data Parsing & Calculation Logic ---
+        const parseScrapedData = (financialsDoc, statsDoc) => {
+            const findStat = (doc, label) => {
+                 for (const table of doc.querySelectorAll('table')) {
+                     for (const row of table.querySelectorAll('tr')) {
+                         if (row.cells[0] && row.cells[0].textContent.trim().toLowerCase() === label.toLowerCase()) {
+                             return row.cells[1] ? row.cells[1].textContent.trim() : '0';
+                         }
+                     }
+                 }
+                 return '0';
+            };
 
-            const scrapeTable = (doc, headersToScrape) => {
-                const table = doc.querySelector('table.fintable');
-                if (!table) throw new Error("Could not find financials table on page.");
-                const data = { years: [], metrics: {} };
-                data.years = Array.from(table.querySelectorAll('thead th')).slice(1).map(th => th.textContent.trim());
-                table.querySelectorAll('tbody tr').forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length > 1) {
-                        const metricName = cells[0].textContent.trim();
-                        if (headersToScrape.includes(metricName)) {
-                            data.metrics[metricName] = Array.from(cells).slice(1).map(td => td.textContent.trim());
-                        }
-                    }
-                });
-                return data;
-            };
+            const scrapeTable = (doc, headersToScrape) => {
+                const table = doc.querySelector('table.fintable');
+                if (!table) throw new Error("Could not find financials table on page.");
+                const data = { years: [], metrics: {} };
+                data.years = Array.from(table.querySelectorAll('thead th')).slice(1).map(th => th.textContent.trim());
+                table.querySelectorAll('tbody tr').forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length > 1) {
+                        const metricName = cells[0].textContent.trim();
+                        if (headersToScrape.includes(metricName)) {
+                            data.metrics[metricName] = Array.from(cells).slice(1).map(td => td.textContent.trim());
+                        }
+                    }
+                });
+                return data;
+            };
 
-            const financials = scrapeTable(financialsDoc, ['Revenue', 'Net Income', 'EPS (Diluted)', 'ROE', 'Shares Outstanding (Basic)']);
-            const stats = {
-                sharesOutstanding: parseFinancialValue(findStat(statsDoc, 'Shares Outstanding')),
-                cash: parseFinancialValue(findStat(statsDoc, 'Cash & Equivalents')),
-                debt: parseFinancialValue(findStat(statsDoc, 'Total Debt')),
-                debtEquity: findStat(statsDoc, 'Debt/Equity'),
-                fcfMargin: parseFloat(findStat(statsDoc, 'Free Cash Flow Margin'))
-            };
-            
-            if (!stats.sharesOutstanding) throw new Error("Could not parse key statistics like Shares Outstanding.");
-            return { financials, stats };
-        };
+            const financials = scrapeTable(financialsDoc, ['Revenue', 'Net Income', 'EPS (Diluted)', 'ROE', 'Shares Outstanding (Basic)']);
+            const stats = {
+                sharesOutstanding: parseFinancialValue(findStat(statsDoc, 'Shares Outstanding')),
+                cash: parseFinancialValue(findStat(statsDoc, 'Cash & Equivalents')),
+                debt: parseFinancialValue(findStat(statsDoc, 'Total Debt')),
+                debtEquity: findStat(statsDoc, 'Debt/Equity'),
+                fcfMargin: parseFloat(findStat(statsDoc, 'Free Cash Flow Margin'))
+            };
+            
+            if (!stats.sharesOutstanding) throw new Error("Could not parse key statistics like Shares Outstanding.");
+            return { financials, stats };
+        };
 
-        const getCalculationInputs = () => {
-            const inputs = {
-                shares: parseFloat(document.getElementById('shares').value) * 1e6,
-                cash: parseFloat(document.getElementById('cash').value) * 1e6,
-                debt: parseFloat(document.getElementById('debt').value) * 1e6,
-                discountRate: parseFloat(document.getElementById('discountRate').value) / 100,
-                growthRate: parseFloat(document.getElementById('growthRate').value) / 100,
-                fcfMargin: parseFloat(document.getElementById('fcfMargin').value) / 100
-            };
-            if (Object.values(inputs).some(isNaN)) throw new Error('All assumption fields must be valid numbers.');
-            if (inputs.discountRate <= inputs.growthRate) throw new Error('Discount Rate must be higher than Perpetual Growth Rate.');
-            return inputs;
-        };
-        
-        const performDcfCalculation = (inputs, lastRevenue) => {
-            const projections = [];
-            let sumOfDiscountedFcf = 0;
-            let currentRevenue = lastRevenue;
+        const getCalculationInputs = () => {
+            const inputs = {
+                shares: parseFloat(document.getElementById('shares').value) * 1e6,
+                cash: parseFloat(document.getElementById('cash').value) * 1e6,
+                debt: parseFloat(document.getElementById('debt').value) * 1e6,
+                discountRate: parseFloat(document.getElementById('discountRate').value) / 100,
+                growthRate: parseFloat(document.getElementById('growthRate').value) / 100,
+                fcfMargin: parseFloat(document.getElementById('fcfMargin').value) / 100
+            };
+            if (Object.values(inputs).some(isNaN)) throw new Error('All assumption fields must be valid numbers.');
+            if (inputs.discountRate <= inputs.growthRate) throw new Error('Discount Rate must be higher than Perpetual Growth Rate.');
+            return inputs;
+        };
+        
+        const performDcfCalculation = (inputs, lastRevenue) => {
+            const projections = [];
+            let sumOfDiscountedFcf = 0;
+            let currentRevenue = lastRevenue;
 
-            for (let year = 1; year <= 10; year++) {
-                const projectedRevenue = currentRevenue * (1 + inputs.growthRate);
-                const freeCashFlow = projectedRevenue * inputs.fcfMargin;
-                const discountFactor = 1 / Math.pow(1 + inputs.discountRate, year);
-                const discountedFcf = freeCashFlow * discountFactor;
-                projections.push({ year, projectedRevenue, freeCashFlow, discountFactor, discountedFcf });
-                sumOfDiscountedFcf += discountedFcf;
-                currentRevenue = projectedRevenue;
-            }
+            for (let year = 1; year <= 10; year++) {
+                const projectedRevenue = currentRevenue * (1 + inputs.growthRate);
+                const freeCashFlow = projectedRevenue * inputs.fcfMargin;
+                const discountFactor = 1 / Math.pow(1 + inputs.discountRate, year);
+                const discountedFcf = freeCashFlow * discountFactor;
+                projections.push({ year, projectedRevenue, freeCashFlow, discountFactor, discountedFcf });
+                sumOfDiscountedFcf += discountedFcf;
+                currentRevenue = projectedRevenue;
+            }
 
-            const lastProjectedFcf = projections[9].freeCashFlow;
-            const terminalValue = (lastProjectedFcf * (1 + inputs.growthRate)) / (inputs.discountRate - inputs.growthRate);
-            const discountedTerminalValue = terminalValue / Math.pow(1 + inputs.discountRate, 10);
-            
-            const enterpriseValue = sumOfDiscountedFcf + discountedTerminalValue;
-            const equityValue = enterpriseValue - inputs.debt + inputs.cash;
-            const intrinsicValuePerShare = equityValue / inputs.shares;
-            
-            return { projections, terminalValue, discountedTerminalValue, enterpriseValue, equityValue, intrinsicValuePerShare };
-        };
+            const lastProjectedFcf = projections[9].freeCashFlow;
+            const terminalValue = (lastProjectedFcf * (1 + inputs.growthRate)) / (inputs.discountRate - inputs.growthRate);
+            const discountedTerminalValue = terminalValue / Math.pow(1 + inputs.discountRate, 10);
+            
+            const enterpriseValue = sumOfDiscountedFcf + discountedTerminalValue;
+            const equityValue = enterpriseValue - inputs.debt + inputs.cash;
+            const intrinsicValuePerShare = equityValue / inputs.shares;
+            
+            return { projections, terminalValue, discountedTerminalValue, enterpriseValue, equityValue, intrinsicValuePerShare };
+        };
 
 
-        // --- UI Update Functions ---
-        const setStatus = (message, isError = false) => {
-            if (appState.ui.statusArea) {
-                appState.ui.statusArea.textContent = message;
-                appState.ui.statusArea.style.color = isError ? '#f87171' : '#9ca3af';
-            }
-        };
+        // --- UI Update Functions ---
+        const setStatus = (message, isError = false) => {
+            if (appState.ui.statusArea) {
+                appState.ui.statusArea.textContent = message;
+                appState.ui.statusArea.style.color = isError ? '#f87171' : '#9ca3af';
+            }
+        };
 
-        const setLoadingState = (isLoading) => {
-            const { ui } = appState;
-            if (ui.fetchBtn) ui.fetchBtn.disabled = isLoading;
-            if (ui.fetchBtnText) ui.fetchBtnText.classList.toggle('hidden', isLoading);
-            if (ui.fetchLoader) ui.fetchLoader.classList.toggle('hidden', !isLoading);
-        };
+        const setLoadingState = (isLoading) => {
+            const { ui } = appState;
+            if (ui.fetchBtn) ui.fetchBtn.disabled = isLoading;
+            if (ui.fetchBtnText) ui.fetchBtnText.classList.toggle('hidden', isLoading);
+            if (ui.fetchLoader) ui.fetchLoader.classList.toggle('hidden', !isLoading);
+        };
 
-        const populateDashboard = (stats) => {
-            document.getElementById('shares').value = (stats.sharesOutstanding / 1e6).toFixed(2);
-            document.getElementById('cash').value = (stats.cash / 1e6).toFixed(2);
-            document.getElementById('debt').value = (stats.debt / 1e6).toFixed(2);
-            document.getElementById('fcfMargin').value = isNaN(stats.fcfMargin) ? '15.00' : stats.fcfMargin.toFixed(2);
-        };
-        
-        const populateBuffettSupplement = (data) => {
-            const { financials, stats } = data;
-            const createTable = (title, headers, rows) => {
-                let tableHtml = `<h3 class="text-lg font-semibold">${title}</h3><div class="overflow-x-auto"><table class="data-table"><thead><tr><th>Metric</th>`;
-                headers.forEach(h => tableHtml += `<th>${h}</th>`);
-                tableHtml += `</tr></thead><tbody>`;
-                Object.entries(rows).forEach(([metricName, values]) => {
-                     if(values) {
-                        tableHtml += `<tr><td>${metricName}</td>`;
-                        values.forEach(v => tableHtml += `<td>${v || 'N/A'}</td>`);
-                        tableHtml += `</tr>`;
-                     }
-                });
-                tableHtml += '</tbody></table></div>';
-                return tableHtml;
-            };
+        const populateDashboard = (stats) => {
+            document.getElementById('shares').value = (stats.sharesOutstanding / 1e6).toFixed(2);
+            document.getElementById('cash').value = (stats.cash / 1e6).toFixed(2);
+            document.getElementById('debt').value = (stats.debt / 1e6).toFixed(2);
+            document.getElementById('fcfMargin').value = isNaN(stats.fcfMargin) ? '15.00' : stats.fcfMargin.toFixed(2);
+        };
+        
+        const populateBuffettSupplement = (data) => {
+            const { financials, stats } = data;
+            const createTable = (title, headers, rows) => {
+                let tableHtml = `<h3 class="text-lg font-semibold">${title}</h3><div class="overflow-x-auto"><table class="data-table"><thead><tr><th>Metric</th>`;
+                headers.forEach(h => tableHtml += `<th>${h}</th>`);
+                tableHtml += `</tr></thead><tbody>`;
+                Object.entries(rows).forEach(([metricName, values]) => {
+                     if(values) {
+                        tableHtml += `<tr><td>${metricName}</td>`;
+                        values.forEach(v => tableHtml += `<td>${v || 'N/A'}</td>`);
+                        tableHtml += `</tr>`;
+                     }
+                });
+                tableHtml += '</tbody></table></div>';
+                return tableHtml;
+            };
 
-            let html = '<div class="space-y-6">';
-            html += createTable('Income Statement Highlights', financials.years, {
-                'Revenue': financials.metrics['Revenue'], 'Net Income': financials.metrics['Net Income'], 'EPS (Diluted)': financials.metrics['EPS (Diluted)'],
-            });
-            html += createTable('Key Ratios & Metrics', financials.years, {
-                'ROE (%)': financials.metrics['ROE'], 'Debt/Equity': Array(financials.years.length).fill(stats.debtEquity),
-                'Shares Outstanding (Basic)': financials.metrics['Shares Outstanding (Basic)'],
-            });
-            html += '</div>';
-            appState.ui.buffettContent.innerHTML = html;
-        };
+            let html = '<div class="space-y-6">';
+            html += createTable('Income Statement Highlights', financials.years, {
+                'Revenue': financials.metrics['Revenue'], 'Net Income': financials.metrics['Net Income'], 'EPS (Diluted)': financials.metrics['EPS (Diluted)'],
+            });
+            html += createTable('Key Ratios & Metrics', financials.years, {
+                'ROE (%)': financials.metrics['ROE'], 'Debt/Equity': Array(financials.years.length).fill(stats.debtEquity),
+                'Shares Outstanding (Basic)': financials.metrics['Shares Outstanding (Basic)'],
+            });
+            html += '</div>';
+            appState.ui.buffettContent.innerHTML = html;
+        };
 
-        const populateDcfBreakdown = (results) => {
-            let html = '<div class="space-y-6">';
-            html += `<h3 class="text-lg font-semibold">10-Year Projections</h3><div class="overflow-x-auto"><table class="data-table"><thead><tr>
-                <th>Year</th><th>Projected Revenue</th><th>Free Cash Flow</th><th>Discount Factor</th><th>Discounted FCF</th>
-            </tr></thead><tbody>`;
-            results.projections.forEach(p => {
-                html += `<tr>
-                    <td>${p.year}</td><td>${formatCurrency(p.projecte dRevenue, 0)}</td><td>${formatCurrency(p.freeCashFlow, 0)}</td>
-                    <td>${p.discountFactor.toFixed(3)}</td><td>${formatCurrency(p.discountedFcf, 0)}</td>
-                </tr>`;
-            });
-            html += '</tbody></table></div>';
-            
-            html += '<h3 class="text-lg font-semibold mt-6">Valuation Summary</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
-            const createSummaryCard = (label, value) => `
-                <div class="summary-card p-4 rounded-md">
-                    <p class="text-sm text-gray-400">${label}</p>
-                    <p class="text-xl font-bold">${formatCurrency(value, 0)}</p>
-                </div>`;
-            html += createSummaryCard('Terminal Value', results.terminalValue);
-            html += createSummaryCard('Discounted Terminal Value', results.discountedTerminalValue);
-            html += createSummaryCard('Enterprise Value', results.enterpriseValue);
-            html += createSummaryCard('Equity Value', results.equityValue);
-            html += '</div></div>';
-            appState.ui.dcfContent.innerHTML = html;
-        };
-        
-        // --- Utility Functions ---
-        const parseFinancialValue = (text) => {
-            if (!text || typeof text !== 'string') return 0;
-            const value = parseFloat(text.replace(/[^0-9.-]/g, ''));
-            if (isNaN(value)) return 0;
-            const multiplier = text.includes('T') ? 1e12 : text.includes('B') ? 1e9 : text.includes('M') ? 1e6 : 1;
-            return value * multiplier;
-        };
-        const formatCurrency = (value, decimals = 2) => {
-            if (isNaN(value)) return '$0.00';
-            return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-        };
-        
-        // --- App Entry Point ---
-        document.addEventListener('DOMContentLoaded', main);
-    </script>
+        const populateDcfBreakdown = (results) => {
+            let html = '<div class="space-y-6">';
+            html += `<h3 class="text-lg font-semibold">10-Year Projections</h3><div class="overflow-x-auto"><table class="data-table"><thead><tr>
+                <th>Year</th><th>Projected Revenue</th><th>Free Cash Flow</th><th>Discount Factor</th><th>Discounted FCF</th>
+            </tr></thead><tbody>`;
+            results.projections.forEach(p => {
+                html += `<tr>
+                    <td>${p.year}</td><td>${formatCurrency(p.projecte dRevenue, 0)}</td><td>${formatCurrency(p.freeCashFlow, 0)}</td>
+                    <td>${p.discountFactor.toFixed(3)}</td><td>${formatCurrency(p.discountedFcf, 0)}</td>
+                </tr>`;
+            });
+            html += '</tbody></table></div>';
+            
+            html += '<h3 class="text-lg font-semibold mt-6">Valuation Summary</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+            const createSummaryCard = (label, value) => `
+                <div class="summary-card p-4 rounded-md">
+                    <p class="text-sm text-gray-400">${label}</p>
+                    <p class="text-xl font-bold">${formatCurrency(value, 0)}</p>
+                </div>`;
+            html += createSummaryCard('Terminal Value', results.terminalValue);
+            html += createSummaryCard('Discounted Terminal Value', results.discountedTerminalValue);
+            html += createSummaryCard('Enterprise Value', results.enterpriseValue);
+            html += createSummaryCard('Equity Value', results.equityValue);
+            html += '</div></div>';
+            appState.ui.dcfContent.innerHTML = html;
+        };
+        
+        // --- Utility Functions ---
+        const parseFinancialValue = (text) => {
+            if (!text || typeof text !== 'string') return 0;
+            const value = parseFloat(text.replace(/[^0-9.-]/g, ''));
+            if (isNaN(value)) return 0;
+            const multiplier = text.includes('T') ? 1e12 : text.includes('B') ? 1e9 : text.includes('M') ? 1e6 : 1;
+            return value * multiplier;
+        };
+        const formatCurrency = (value, decimals = 2) => {
+            if (isNaN(value)) return '$0.00';
+            return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        };
+        
+        // --- App Entry Point ---
+        document.addEventListener('DOMContentLoaded', main);
+    </script>
 </body>
 </html>
-
-
 
