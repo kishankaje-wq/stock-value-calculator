@@ -215,6 +215,186 @@
             const parseFinancialValue = (text) => {
                 if (!text || typeof text !== 'string') return 0;
                 const value = parseFloat(text.replace(/[^0-9.-]/g, ''));
+                if (isNaN(value)) return 0;
+                const multiplier = text.includes('T') ? 1e12 : text.includes('B') ? 1e9 : text.includes('M') ? 1e6 : 1;
+                return value * multiplier;
+            };
+
+            const formatCurrency = (value, decimals = 2) => {
+                if (isNaN(value)) return '$0.00';
+                return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+            };
+            
+            const formatNumber = (value) => {
+                 if (isNaN(value)) return '0';
+                 return value.toLocaleString('en-US');
+            }
+
+            // --- Data Fetching Logic ---
+            fetchBtn.addEventListener('click', async () => {
+                const ticker = tickerInput.value.trim().toUpperCase();
+                if (!ticker) {
+                    setStatus('Please enter a ticker.', true);
+                    return;
+                }
+
+                fetchBtn.disabled = true;
+                fetchBtnText.classList.add('hidden');
+                fetchLoader.classList.remove('hidden');
+                setStatus(`Fetching data for ${ticker}...`);
+                analysisSection.classList.add('hidden');
+                resultArea.classList.add('hidden');
+
+                try {
+                    // Switched to a different proxy for better reliability
+                    const proxy = 'https://corsproxy.io/?';
+                    const financialsUrl = `${proxy}https://stockanalysis.com/stocks/${ticker}/financials/?p=quarterly`;
+                    const statsUrl = `${proxy}https://stockanalysis.com/stocks/${ticker}/statistics/`;
+
+                    const [financialsRes, statsRes] = await Promise.all([
+                        fetch(financialsUrl, { headers: { 'Origin': window.location.origin } }),
+                        fetch(statsUrl, { headers: { 'Origin': window.location.origin } })
+                    ]);
+
+                    if (!financialsRes.ok || !statsRes.ok) throw new Error('Failed to fetch data. The ticker may be invalid or the data source is unavailable.');
+
+                    const financialsHtml = await financialsRes.text();
+                    const statsHtml = await statsRes.text();
+                    
+                    const parser = new DOMParser();
+                    const financialsDoc = parser.parseFromString(financialsHtml, 'text/html');
+                    const statsDoc = parser.parseFromString(statsHtml, 'text/html');
+
+                    // --- Scraping logic with improved error checking ---
+                    const scrapeTable = (doc, tableHeaders) => {
+                        const data = { years: [], metrics: {} };
+                        const table = doc.querySelector('table.fintable');
+                        if (!table) throw new Error('Could not find financials table. Website structure may have changed.');
+
+                        const headers = Array.from(table.querySelectorAll('thead th')).slice(1).map(th => th.textContent.trim());
+                        data.years = headers;
+
+                        table.querySelectorAll('tbody tr').forEach(row => {
+                            const cells = row.querySelectorAll('td');
+                            if(cells.length > 1) {
+                                const metricName = cells[0].textContent.trim();
+                                if (tableHeaders.includes(metricName)) {
+                                    data.metrics[metricName] = Array.from(cells).slice(1).map(td => td.textContent.trim());
+                                }
+                            }
+                        });
+                        return data;
+                    };
+
+                    const findStat = (doc, label) => {
+                         const tables = doc.querySelectorAll('table');
+                         for (const table of tables) {
+                             const rows = Array.from(table.querySelectorAll('tr'));
+                             const row = rows.find(r => r.cells[0] && r.cells[0].textContent.trim().toLowerCase() === label.toLowerCase());
+                             if (row && row.cells[1]) return row.cells[1].textContent.trim();
+                         }
+                         return '0';
+                    };
+
+                    fetchedDataStore.financials = scrapeTable(financialsDoc, ['Revenue', 'Net Income', 'EPS (Diluted)', 'ROE', 'Shares Outstanding (Basic)']);
+                    fetchedDataStore.stats = {
+                        sharesOutstanding: parseFinancialValue(findStat(statsDoc, 'Shares Outstanding')),
+                        cash: parseFinancialValue(findStat(statsDoc, 'Cash & Equivalents')),
+                        debt: parseFinancialValue(findStat(statsDoc, 'Total Debt')),
+                        debtEquity: findStat(statsDoc, 'Debt/Equity'),
+                        fcfMargin: parseFloat(findStat(statsDoc, 'Free Cash Flow Margin'))
+                    };
+                    
+                    if (!fetchedDataStore.stats.sharesOutstanding) {
+                        throw new Error(`Could not parse key data for ${ticker}. The website's layout may have changed.`);
+                    }
+
+                    populateDashboard();
+                    populateBuffettSupplement();
+                    
+                    analysisSection.classList.remove('hidden');
+                    setStatus(`Successfully fetched data for ${ticker}.`, false);
+
+                } catch (error) {
+                    setStatus(error.message, true);
+                } finally {
+                    fetchBtn.disabled = false;
+                    fetchBtnText.classList.remove('hidden');
+                    fetchLoader.classList.add('hidden');
+                }
+            });
+
+            // --- UI Population ---
+            const populateDashboard = () => {
+                const stats = fetchedDataStore.stats;
+                document.getElementById('shares').value = (stats.sharesOutstanding / 1e6).toFixed(2);
+                document.getElementById('cash').value = (stats.cash / 1e6).toFixed(2);
+                document.getElementById('debt').value = (stats.debt / 1e6).toFixed(2);
+                document.getElementById('fcfMargin').value = isNaN(stats.fcfMargin) ? '15.00' : stats.fcfMargin.toFixed(2); // Provide a default if not found
+            };
+
+            const populateBuffettSupplement = () => {
+                const financials = fetchedDataStore.financials;
+                const stats = fetchedDataStore.stats;
+                let html = '<div class="space-y-6">';
+
+                const createTable = (title, headers, rows) => {
+                    let tableHtml = `<h3 class="text-lg font-semibold">${title}</h3><div class="overflow-x-auto"><table class="data-table"><thead><tr><d>
+                    </div>
+                    <div>
+                        <dt class="font-semibold text-white">Discount Rate (%)</dt>
+                        <dd>The required rate of return an investor expects for taking on the risk of investing in the company. A higher rate implies more risk and results in a lower intrinsic value. Often represented by the Weighted Average Cost of Capital (WACC).</dd>
+                    </div>
+                    <div>
+                        <dt class="font-semibold text-white">Perpetual Growth Rate (%)</dt>
+                        <dd>The constant rate at which a company's free cash flow is expected to grow forever after the 10-year forecast period. This is typically a low number, similar to long-term economic growth (e.g., 2-3%).</dd>
+                    </div>
+                     <div>
+                        <dt class="font-semibold text-white">Free Cash Flow (FCF) Margin (%)</dt>
+                        <dd>The percentage of revenue a company converts into free cash flow (FCF / Revenue). It's a key indicator of profitability and operational efficiency. A higher, stable margin is desirable.</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+            const fetchBtn = document.getElementById('fetch-btn');
+            const fetchBtnText = document.getElementById('fetch-btn-text');
+            const fetchLoader = document.getElementById('fetch-loader');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const tickerInput = document.getElementById('ticker');
+            const statusArea = document.getElementById('status-area');
+            const analysisSection = document.getElementById('analysis-section');
+            const resultArea = document.getElementById('result-area');
+            const intrinsicValueEl = document.getElementById('intrinsic-value');
+            
+            let fetchedDataStore = {};
+
+            // --- Tab Logic ---
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const target = tab.getAttribute('data-tab');
+                    contents.forEach(content => {
+                        content.id === target ? content.classList.add('active') : content.classList.remove('active');
+                    });
+                });
+            });
+
+            // --- Utility Functions ---
+            const setStatus = (message, isError = false) => {
+                statusArea.textContent = message;
+                statusArea.style.color = isError ? '#f87171' : '#9ca3af';
+            };
+
+            const parseFinancialValue = (text) => {
+                if (!text || typeof text !== 'string') return 0;
+                const value = parseFloat(text.replace(/[^0-9.-]/g, ''));
                 const multiplier = text.includes('T') ? 1e12 : text.includes('B') ? 1e9 : text.includes('M') ? 1e6 : 1;
                 return value * multiplier;
             };
@@ -892,5 +1072,6 @@
     </script>
 </body>
 </html>
+
 
 
